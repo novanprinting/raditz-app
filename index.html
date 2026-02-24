@@ -3,224 +3,257 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RADITZ OJOL PRO - Dashboard</title>
+    <title>RADITZ OJOL PRO</title>
     <style>
         :root {
             --primary: #1e88e5;
             --success: #2e7d32;
             --danger: #d32f2f;
-            --bg: #f4f7f6;
+            --bg: #f0f2f5;
         }
 
-        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); padding-bottom: 70px; }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); padding-bottom: 80px; color: #333; }
+        .header { background: var(--primary); color: white; padding: 15px; text-align: center; font-weight: bold; position: sticky; top:0; z-index: 10; }
+        .container { padding: 12px; max-width: 500px; margin: auto; }
         
-        /* LOGIN OVERLAY */
-        #loginPage { 
-            position: fixed; inset: 0; background: white; z-index: 1000; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
-        }
-
-        .header { background: var(--primary); color: white; padding: 15px; text-align: center; font-weight: bold; }
-        .container { padding: 15px; max-width: 500px; margin: auto; }
         .page { display: none; }
         .page.active { display: block; }
         
-        .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .grid-dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .card { background: white; padding: 15px; border-radius: 15px; margin-bottom: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        h3 { margin: 0 0 10px 0; font-size: 1rem; color: var(--primary); border-bottom: 1px solid #eee; padding-bottom: 5px; }
         
-        input, button { width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; }
+        input, select, button { width: 100%; padding: 12px; margin-top: 8px; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; font-size: 14px; }
         button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
         
-        .navbar { position: fixed; bottom: 0; width: 100%; display: flex; background: white; border-top: 1px solid #ccc; }
-        .navbar button { flex: 1; background: none; color: #666; border: none; padding: 15px; }
-        .navbar button.active { color: var(--primary); font-weight: bold; }
+        .grid-db { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .stat-box { padding: 10px; border-radius: 10px; text-align: center; }
+        .blue { background: #e3f2fd; } .green { background: #e8f5e9; } .orange { background: #fff3e0; }
+        
+        .navbar { position: fixed; bottom: 0; width: 100%; display: flex; background: white; border-top: 1px solid #ddd; height: 65px; }
+        .navbar button { flex: 1; background: none; color: #777; border: none; padding: 0; margin: 0; border-radius: 0; }
+        .navbar button.active { color: var(--primary); }
 
-        .stat-label { font-size: 0.8rem; color: #666; }
-        .stat-value { font-size: 1.1rem; font-weight: bold; display: block; }
+        .sync-status { font-size: 0.7rem; text-align: center; margin-top: 5px; color: #888; }
     </style>
 </head>
 <body>
 
-<div id="loginPage">
-    <h2>RADITZ OJOL PRO</h2>
-    <input type="text" id="userInput" placeholder="Username">
-    <input type="password" id="passInput" placeholder="Password">
-    <button onclick="login()">Masuk / Daftar</button>
+<div class="header">RADITZ OJOL PRO</div>
+
+<div class="container">
+    <div id="page0" class="page active">
+        <div class="card">
+            <h3>📅 Filter & Rekap Real-Time</h3>
+            <input type="date" id="filterTanggal" onchange="updateDashboard()">
+            <div class="grid-db" style="margin-top:15px">
+                <div class="stat-box blue">
+                    <small>Harian</small>
+                    <b id="dbHarian" style="display:block">Rp 0</b>
+                </div>
+                <div class="stat-box blue">
+                    <small>Mingguan</small>
+                    <b id="dbMingguan" style="display:block">Rp 0</b>
+                </div>
+                <div class="stat-box blue">
+                    <small>Bulanan</small>
+                    <b id="dbBulanan" style="display:block">Rp 0</b>
+                </div>
+                <div class="stat-box blue">
+                    <small>Tahunan</small>
+                    <b id="dbTahunan" style="display:block">Rp 0</b>
+                </div>
+            </div>
+        </div>
+
+        <div class="card green">
+            <h3>🏦 Total Tabungan</h3>
+            <h2 id="dbTabungan" style="margin:5px 0">Rp 0</h2>
+            <small>Terakumulasi dari 30% pendapatan</small>
+        </div>
+
+        <div class="card orange">
+            <h3>🏠 Saldo Kebutuhan</h3>
+            <h2 id="dbKebutuhan" style="margin:5px 0">Rp 0</h2>
+            <small>Siap digunakan untuk pengeluaran harian</small>
+        </div>
+        <div class="sync-status" id="syncStatus">Data tersimpan di perangkat</div>
+    </div>
+
+    <div id="page1" class="page">
+        <div class="card">
+            <h3>🚗 Order Baru</h3>
+            <input type="text" id="custName" placeholder="Nama Pelanggan">
+            <input type="number" id="dist" placeholder="Jarak (km)">
+            <button onclick="addOrder()">Simpan ke Cloud</button>
+        </div>
+    </div>
+
+    <div id="page2" class="page">
+        <div class="card">
+            <h3>💰 Pendapatan Lain / Bonus</h3>
+            <input type="number" id="inNominal" placeholder="Nominal (Rp)">
+            <input type="text" id="inNote" placeholder="Catatan (misal: Tip/Bonus)">
+            <button style="background:var(--success)" onclick="addExtra('IN')">Tambah Pendapatan</button>
+        </div>
+        <div class="card">
+            <h3>💸 Pengeluaran Harian</h3>
+            <input type="number" id="outNominal" placeholder="Nominal (Rp)">
+            <input type="text" id="outNote" placeholder="Catatan (misal: Makan/Bensin)">
+            <button style="background:var(--danger)" onclick="addExtra('OUT')">Catat Pengeluaran</button>
+        </div>
+    </div>
+
+    <div id="page3" class="page">
+        <div class="card" style="text-align: center;">
+            <h3>🏦 Rekap Tabungan</h3>
+            <h1 id="tabTotal">Rp 0</h1>
+            <p>Tabungan Anda otomatis terpotong 30% dari setiap penghasilan.</p>
+            <button onclick="window.open('URL_GOOGLE_SHEET_ANDA', '_blank')" style="background:#4caf50">Buka Rekap di Google Sheets</button>
+        </div>
+    </div>
 </div>
 
-<div id="mainApp" style="display:none">
-    <div class="header" id="welcomeUser">RADITZ OJOL PRO</div>
-
-    <div class="container">
-        <div id="page0" class="page active">
-            <div class="card">
-                <h3>🏠 Dashboard Utama</h3>
-                <div class="grid-dashboard">
-                    <div class="card" style="margin:0; background: #e3f2fd;">
-                        <span class="stat-label">Pendapatan Hari Ini</span>
-                        <span class="stat-value" id="dashHarian">Rp 0</span>
-                    </div>
-                    <div class="card" style="margin:0; background: #e8f5e9;">
-                        <span class="stat-label">Total Tabungan</span>
-                        <span class="stat-value" id="dashTabungan">Rp 0</span>
-                    </div>
-                </div>
-                <div class="card" style="margin-top:10px; background: #fff3e0;">
-                    <span class="stat-label">Saldo Kebutuhan (Siap Pakai)</span>
-                    <span class="stat-value" id="dashKebutuhan">Rp 0</span>
-                </div>
-            </div>
-        </div>
-
-        <div id="page1" class="page">
-            <div class="card">
-                <h3>🚗 Input Order</h3>
-                <input type="text" id="namaPelanggan" placeholder="Nama Pelanggan">
-                <input type="number" id="jarak" placeholder="Jarak (km)">
-                <button onclick="hitungOngkos()">Simpan Order</button>
-            </div>
-        </div>
-
-        <div id="page2" class="page">
-            <div class="card">
-                <h3>💰 Kelola Keuangan</h3>
-                <input type="number" id="pendapatanLain" placeholder="Pendapatan Tambahan (Rp)">
-                <button style="background: var(--success)" onclick="tambahPendapatanLain()">Tambah Pendapatan</button>
-                <hr>
-                <input type="number" id="pengeluaranHari" placeholder="Pengeluaran Harian (Rp)">
-                <button style="background: var(--danger)" onclick="catatPengeluaran()">Catat Pengeluaran</button>
-            </div>
-            
-            <div class="card">
-                <h3>📊 Alokasi Saat Ini</h3>
-                <p>Kebutuhan: <b id="textKebutuhan">0</b></p>
-                <p>Tabungan: <b id="textTabungan">0</b></p>
-                <p>Perawatan (20%): <b id="textPerawatan">0</b></p>
-            </div>
-        </div>
-
-        <div id="page3" class="page">
-            <div class="card" style="text-align: center;">
-                <h3>🏦 Brankas Tabungan</h3>
-                <h1 id="totalTabunganBesar">Rp 0</h1>
-                <p>Data ini otomatis bertambah dari 30% setiap orderan/pendapatan yang masuk.</p>
-                <button onclick="logout()" style="background:#666">Keluar Aplikasi</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="navbar">
-        <button onclick="showPage(0, this)" class="active">Home</button>
-        <button onclick="showPage(1, this)">Order</button>
-        <button onclick="showPage(2, this)">Keuangan</button>
-        <button onclick="showPage(3, this)">Tabungan</button>
-    </div>
+<div class="navbar">
+    <button onclick="showPage(0, this)" class="active">🏠 Dashboard</button>
+    <button onclick="showPage(1, this)">🚗 Order</button>
+    <button onclick="showPage(2, this)">💰 Keuangan</button>
+    <button onclick="showPage(3, this)">🏦 Tabungan</button>
 </div>
 
 <script>
-    let currentUser = "";
-    let userData = {};
-
-    function login() {
-        let user = document.getElementById('userInput').value;
-        let pass = document.getElementById('passInput').value;
-        if(!user || !pass) return alert("Isi User & Password");
-
-        currentUser = user;
-        let stored = JSON.parse(localStorage.getItem("ojol_user_" + user));
-        
-        if(stored) {
-            if(stored.pass !== pass) return alert("Password Salah!");
-            userData = stored;
-        } else {
-            userData = {
-                pass: pass,
-                pendapatan: [],
-                saldoKebutuhan: 0,
-                saldoTabungan: 0,
-                saldoPerawatan: 0
-            };
-            saveData();
-        }
-
-        document.getElementById('loginPage').style.display = 'none';
-        document.getElementById('mainApp').style.display = 'block';
-        document.getElementById('welcomeUser').innerText = "Halo, " + user.toUpperCase();
-        updateUI();
-    }
-
-    function saveData() {
-        localStorage.setItem("ojol_user_" + currentUser, JSON.stringify(userData)); 
-    }
+    // --- KONFIGURASI ---
+    const SCRIPT_URL = "URL_APPS_SCRIPT_ANDA"; // Ganti dengan URL dari Google Apps Script
+    
+    let db = JSON.parse(localStorage.getItem('ojol_db')) || {
+        transaksi: [], // Gabungan semua: order, in, out
+        saldoKebutuhan: 0,
+        saldoTabungan: 0,
+        saldoPerawatan: 0
+    };
 
     function showPage(num, btn) {
         document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
         document.querySelectorAll(".navbar button").forEach(b => b.classList.remove("active"));
         document.getElementById("page" + num).classList.add("active");
         btn.classList.add("active");
-        updateUI();
+        updateDashboard();
     }
 
-    function hitungOngkos() {
-        let jarak = parseFloat(document.getElementById("jarak").value);
-        if(isNaN(jarak)) return;
-        let total = (jarak <= 2) ? 5000 : 5000 + ((jarak - 2) * 2000);
+    function saveDB() {
+        localStorage.setItem('ojol_db', JSON.stringify(db));
+        updateDashboard();
+        syncToCloud();
+    }
+
+    function addOrder() {
+        let name = document.getElementById('custName').value;
+        let dist = parseFloat(document.getElementById('dist').value);
+        if(!name || isNaN(dist)) return;
+
+        let total = (dist <= 2) ? 5000 : 5000 + ((dist - 2) * 2000);
         
-        prosesMasukUang(total);
-        alert("Order Berhasil: Rp " + total.toLocaleString());
-        document.getElementById("jarak").value = "";
-    }
+        let trx = {
+            id: Date.now(),
+            tgl: new Date().toISOString(),
+            jenis: 'ORDER',
+            keterangan: 'Order: ' + name,
+            masuk: total,
+            keluar: 0
+        };
 
-    function tambahPendapatanLain() {
-        let nominal = parseFloat(document.getElementById("pendapatanLain").value);
-        if(isNaN(nominal)) return;
-        prosesMasukUang(nominal);
-        document.getElementById("pendapatanLain").value = "";
-    }
-
-    function prosesMasukUang(nominal) {
-        userData.saldoKebutuhan += (nominal * 0.5); 
-        userData.saldoTabungan += (nominal * 0.3); 
-        userData.saldoPerawatan += (nominal * 0.2); 
-        userData.pendapatan.push({tgl: new Date().toLocaleDateString(), total: nominal}); 
-        saveData();
-        updateUI();
-    }
-
-    function catatPengeluaran() {
-        let nominal = parseFloat(document.getElementById("pengeluaranHari").value);
-        if(isNaN(nominal)) return;
-        if(nominal > userData.saldoKebutuhan) return alert("Saldo Kebutuhan Tidak Cukup!");
+        db.transaksi.push(trx);
+        db.saldoKebutuhan += (total * 0.5);
+        db.saldoTabungan += (total * 0.3);
+        db.saldoPerawatan += (total * 0.2);
         
-        userData.saldoKebutuhan -= nominal;
-        saveData();
-        updateUI();
-        document.getElementById("pengeluaranHari").value = "";
+        document.getElementById('custName').value = "";
+        document.getElementById('dist').value = "";
+        saveDB();
+        alert("Order disimpan!");
     }
 
-    function updateUI() {
-        let hariIni = new Date().toLocaleDateString();
-        let totalHariIni = userData.pendapatan
-            .filter(d => d.tgl === hariIni)
-            .reduce((sum, item) => sum + item.total, 0); 
+    function addExtra(type) {
+        let nom = parseFloat(document.getElementById(type === 'IN' ? 'inNominal' : 'outNominal').value);
+        let note = document.getElementById(type === 'IN' ? 'inNote' : 'outNote').value;
+        if(isNaN(nom)) return;
 
-        // Dashboard
-        document.getElementById("dashHarian").innerText = "Rp " + totalHariIni.toLocaleString(); 
-        document.getElementById("dashTabungan").innerText = "Rp " + userData.saldoTabungan.toLocaleString();
-        document.getElementById("dashKebutuhan").innerText = "Rp " + userData.saldoKebutuhan.toLocaleString();
+        let trx = {
+            id: Date.now(),
+            tgl: new Date().toISOString(),
+            jenis: type === 'IN' ? 'EXTRA' : 'EXPENSE',
+            keterangan: note || (type === 'IN' ? 'Pendapatan Lain' : 'Pengeluaran'),
+            masuk: type === 'IN' ? nom : 0,
+            keluar: type === 'OUT' ? nom : 0
+        };
 
-        // Keuangan Page
-        document.getElementById("textKebutuhan").innerText = "Rp " + userData.saldoKebutuhan.toLocaleString();
-        document.getElementById("textTabungan").innerText = "Rp " + userData.saldoTabungan.toLocaleString();
-        document.getElementById("textPerawatan").innerText = "Rp " + userData.saldoPerawatan.toLocaleString();
+        if(type === 'IN') {
+            db.saldoKebutuhan += (nom * 0.5);
+            db.saldoTabungan += (nom * 0.3);
+            db.saldoPerawatan += (nom * 0.2);
+        } else {
+            if(nom > db.saldoKebutuhan) return alert("Saldo kebutuhan tidak cukup!");
+            db.saldoKebutuhan -= nom;
+        }
 
-        // Tabungan Page
-        document.getElementById("totalTabunganBesar").innerText = "Rp " + userData.saldoTabungan.toLocaleString();
+        db.transaksi.push(trx);
+        document.getElementById(type === 'IN' ? 'inNominal' : 'outNominal').value = "";
+        document.getElementById(type === 'IN' ? 'inNote' : 'outNote').value = "";
+        saveDB();
     }
 
-    function logout() {
-        location.reload();
+    function updateDashboard() {
+        let filter = document.getElementById('filterTanggal').value;
+        let refDate = filter ? new Date(filter) : new Date();
+        
+        const isSameDay = (d1, d2) => d1.toDateString() === d2.toDateString();
+        const isSameWeek = (d1, d2) => {
+            let oneJan = new Date(d1.getFullYear(),0,1);
+            let week1 = Math.ceil((((d1 - oneJan) / 86400000) + oneJan.getDay() + 1) / 7);
+            let week2 = Math.ceil((((d2 - oneJan) / 86400000) + oneJan.getDay() + 1) / 7);
+            return week1 === week2 && d1.getFullYear() === d2.getFullYear();
+        };
+
+        let harian = 0, mingguan = 0, bulanan = 0, tahunan = 0;
+
+        db.transaksi.forEach(t => {
+            let tDate = new Date(t.tgl);
+            if(t.masuk > 0) {
+                if(isSameDay(tDate, refDate)) harian += t.masuk;
+                if(isSameWeek(tDate, refDate)) mingguan += t.masuk;
+                if(tDate.getMonth() === refDate.getMonth() && tDate.getFullYear() === refDate.getFullYear()) bulanan += t.masuk;
+                if(tDate.getFullYear() === refDate.getFullYear()) tahunan += t.masuk;
+            }
+        });
+
+        document.getElementById('dbHarian').innerText = "Rp " + harian.toLocaleString();
+        document.getElementById('dbMingguan').innerText = "Rp " + mingguan.toLocaleString();
+        document.getElementById('dbBulanan').innerText = "Rp " + bulanan.toLocaleString();
+        document.getElementById('dbTahunan').innerText = "Rp " + tahunan.toLocaleString();
+        
+        document.getElementById('dbTabungan').innerText = "Rp " + db.saldoTabungan.toLocaleString();
+        document.getElementById('dbKebutuhan').innerText = "Rp " + db.saldoKebutuhan.toLocaleString();
+        document.getElementById('tabTotal').innerText = "Rp " + db.saldoTabungan.toLocaleString();
     }
+
+    function syncToCloud() {
+        if(SCRIPT_URL === "https://script.google.com/macros/s/AKfycbyuvdVKOY7JAvcVRlzW_EVa9kBT2DZwSKqk2-zEvQa8vD4BESd02KtGy5IGhnau4JbiOw/exec") return;
+        document.getElementById('syncStatus').innerText = "Sinkronisasi ke Google Sheets...";
+        
+        fetch(SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(db.transaksi[db.transaksi.length - 1])
+        }).then(() => {
+            document.getElementById('syncStatus').innerText = "✓ Terhubung ke Google Sheet";
+        }).catch(() => {
+            document.getElementById('syncStatus').innerText = "⚠️ Gagal Sync (Offline)";
+        });
+    }
+
+    // Set default tanggal filter hari ini
+    document.getElementById('filterTanggal').valueAsDate = new Date();
+    updateDashboard();
 </script>
 
 </body>
