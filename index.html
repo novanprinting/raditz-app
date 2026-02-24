@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RADITZ OJOL PRO</title>
+    <link rel="icon" type="image/png" sizes="512x512" href="icon.png">
+    <link rel="apple-touch-icon" href="icon.png">
+    <meta name="theme-color" content="#1e88e5">
+    <link rel="manifest" href="manifest.json">
+    <title>RADIT OJEK ONLINE</title>
     <style>
         :root { --primary: #1e88e5; --success: #2e7d32; --danger: #d32f2f; --bg: #f0f2f5; }
         body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); padding-bottom: 80px; color: #333; }
@@ -22,16 +26,17 @@
         .navbar button.active { color: var(--primary); font-weight: bold; }
         .history-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
         .btn-del { width: auto; background: #fee2e2; color: var(--danger); padding: 5px 10px; margin: 0; font-size: 11px; }
+        .btn-reset { background: var(--danger); margin-top: 20px; }
     </style>
 </head>
 <body>
 
-<div class="header">RADITZ OJOL PRO</div>
+<div class="header">RADITZ OJEK ONLINE</div>
 
 <div class="container">
     <div id="page0" class="page active">
         <div class="card">
-            <h3>📊 Rekap Harian & Dashboard</h3>
+            <h3>📊 Rekap Harian</h3>
             <input type="date" id="filterTanggal" onchange="updateAll()">
             <div class="grid-db" style="margin-top:15px">
                 <div class="stat-box blue"><small>Pend. Harian</small><b id="dbHarian">Rp 0</b></div>
@@ -40,8 +45,8 @@
                 <div class="stat-box blue"><small>Tahunan</small><b id="dbTahunan">Rp 0</b></div>
             </div>
         </div>
-        <div class="card green"><h3>🏦 Tabungan (30%)</h3><h2 id="dbTabungan">Rp 0</h2></div>
-        <div class="card orange"><h3>🏠 Kebutuhan (50%)</h3><h2 id="dbKebutuhan">Rp 0</h2></div>
+        <div class="card green"><h3>🏦 Tabungan</h3><h2 id="dbTabungan">Rp 0</h2></div>
+        <div class="card orange"><h3>🏠 Kebutuhan</h3><h2 id="dbKebutuhan">Rp 0</h2></div>
     </div>
 
     <div id="page1" class="page">
@@ -51,15 +56,11 @@
             <input type="number" id="dist" placeholder="Jarak (km)">
             <button onclick="addOrder()">Simpan Data</button>
         </div>
-        <div class="card">
-            <h3>📋 Riwayat Order (Hari Ini)</h3>
-            <div id="orderHistoryContainer"></div>
-        </div>
     </div>
 
     <div id="page2" class="page">
         <div class="card">
-            <h3>💰 Pendapatan Bonus / Tips</h3>
+            <h3>💰 Tambah Pendapatan</h3>
             <input type="number" id="inNominal" placeholder="Nominal (Rp)">
             <input type="text" id="inNote" placeholder="Catatan">
             <button style="background:var(--success)" onclick="addExtra('IN')">Simpan Pendapatan</button>
@@ -69,10 +70,6 @@
             <input type="number" id="outNominal" placeholder="Nominal (Rp)">
             <input type="text" id="outNote" placeholder="Catatan">
             <button style="background:var(--danger)" onclick="addExtra('OUT')">Simpan Pengeluaran</button>
-        </div>
-        <div class="card">
-            <h3>📋 Riwayat Semua Transaksi</h3>
-            <div id="historyContainer"></div>
         </div>
     </div>
 
@@ -94,6 +91,15 @@
 <script>
     let db = JSON.parse(localStorage.getItem('ojol_db')) || { transaksi: [], saldoKebutuhan: 0, saldoTabungan: 0 };
 
+    function hapusSemuaData() {
+        if (confirm("HAPUS SEMUA DATA? Tindakan ini tidak bisa dibatalkan.")) {
+            db = { transaksi: [], saldoKebutuhan: 0, saldoTabungan: 0 };
+            localStorage.removeItem('ojol_db');
+            updateAll();
+            alert("Semua data riwayat dan saldo telah dikosongkan.");
+        }
+    }
+
     function showPage(num, btn) {
         document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
         document.querySelectorAll(".navbar button").forEach(b => b.classList.remove("active"));
@@ -111,11 +117,9 @@
     function addOrder() {
         let name = document.getElementById('custName').value;
         let dist = parseFloat(document.getElementById('dist').value);
-        if(!name || isNaN(dist)) return alert("Lengkapi data order!");
-        
+        if(!name || isNaN(dist)) return alert("Isi data!");
         let total = (dist <= 2) ? 5000 : 5000 + ((dist - 2) * 2000);
-        db.transaksi.push({ id: Date.now(), tgl: new Date().toISOString(), tipe: 'IN', jenis: 'ORDER', ket: `Order: ${name} (${dist}km)`, val: total });
-        
+        db.transaksi.push({ id: Date.now(), tgl: new Date().toISOString(), tipe: 'IN', jenis: 'ORDER', ket: `Order: ${name}`, val: total });
         db.saldoKebutuhan += (total * 0.5); db.saldoTabungan += (total * 0.3);
         document.getElementById('custName').value = ""; document.getElementById('dist').value = "";
         updateAll();
@@ -125,35 +129,27 @@
         let nom = parseFloat(document.getElementById(type === 'IN' ? 'inNominal' : 'outNominal').value);
         let note = document.getElementById(type === 'IN' ? 'inNote' : 'outNote').value;
         if(isNaN(nom)) return alert("Isi nominal!");
-        if(type === 'OUT' && nom > db.saldoKebutuhan) return alert("Saldo kebutuhan tidak cukup!");
-
-        db.transaksi.push({ id: Date.now(), tgl: new Date().toISOString(), tipe: type, jenis: 'EXTRA', ket: note || (type === 'IN' ? 'Pendapatan' : 'Pengeluaran'), val: nom });
+        db.transaksi.push({ id: Date.now(), tgl: new Date().toISOString(), tipe: type, jenis: 'EXTRA', ket: note || 'Trx', val: nom });
         if(type === 'IN') { db.saldoKebutuhan += (nom * 0.5); db.saldoTabungan += (nom * 0.3); } 
         else { db.saldoKebutuhan -= nom; }
-
         document.getElementById(type === 'IN' ? 'inNominal' : 'outNominal').value = "";
-        document.getElementById(type === 'IN' ? 'inNote' : 'outNote').value = "";
         updateAll();
     }
 
     function renderHistory() {
         let hKeuangan = "", hOrder = "";
         let filterDate = document.getElementById('filterTanggal').value || new Date().toISOString().split('T')[0];
-        
         [...db.transaksi].reverse().forEach(t => {
             let tDate = new Date(t.tgl).toISOString().split('T')[0];
-            let item = `<div class="history-item"><div><b style="color:${t.tipe === 'IN' ? 'var(--success)' : 'var(--danger)'}">${t.tipe === 'IN' ? '+' : '-'} Rp ${t.val.toLocaleString()}</b><br><small>${t.ket}</small></div><button class="btn-del" onclick="deleteTrx(${t.id})">Del</button></div>`;
-            
+            let item = `<div class="history-item"><div><b>${t.tipe === 'IN' ? '+' : '-'} Rp ${t.val.toLocaleString()}</b><br><small>${t.ket}</small></div><button class="btn-del" onclick="deleteTrx(${t.id})">Del</button></div>`;
             hKeuangan += item;
             if(t.jenis === 'ORDER' && tDate === filterDate) hOrder += item;
         });
-
-        document.getElementById('historyContainer').innerHTML = hKeuangan || "<small>Belum ada riwayat keuangan.</small>";
-        document.getElementById('orderHistoryContainer').innerHTML = hOrder || "<small>Belum ada order pada tanggal ini.</small>";
+        document.getElementById('historyContainer').innerHTML = hKeuangan || "<small>Data kosong.</small>";
+        document.getElementById('orderHistoryContainer').innerHTML = hOrder || "<small>Data kosong.</small>";
     }
 
     function deleteTrx(id) {
-        if(!confirm("Hapus data? Saldo akan dikoreksi.")) return;
         let t = db.transaksi.find(x => x.id === id);
         if(t.tipe === 'IN') { db.saldoKebutuhan -= (t.val * 0.5); db.saldoTabungan -= (t.val * 0.3); } 
         else { db.saldoKebutuhan += t.val; }
@@ -165,18 +161,16 @@
         let filter = document.getElementById('filterTanggal').value;
         let refDate = filter ? new Date(filter) : new Date();
         let harian = 0, bulanan = 0, tahunan = 0, outHarian = 0;
-
         db.transaksi.forEach(t => {
             let tDate = new Date(t.tgl);
             if(t.tipe === 'IN') {
                 if(tDate.toDateString() === refDate.toDateString()) harian += t.val;
                 if(tDate.getMonth() === refDate.getMonth() && tDate.getFullYear() === refDate.getFullYear()) bulanan += t.val;
                 if(tDate.getFullYear() === refDate.getFullYear()) tahunan += t.val;
-            } else if (t.tipe === 'OUT' && tDate.toDateString() === refDate.toDateString()) {
+            } else if (tDate.toDateString() === refDate.toDateString()) {
                 outHarian += t.val;
             }
         });
-
         document.getElementById('dbHarian').innerText = "Rp " + harian.toLocaleString();
         document.getElementById('dbOutHarian').innerText = "Rp " + outHarian.toLocaleString();
         document.getElementById('dbBulanan').innerText = "Rp " + bulanan.toLocaleString();
@@ -191,4 +185,3 @@
 </script>
 </body>
 </html>
-
