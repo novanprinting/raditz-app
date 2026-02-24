@@ -3,214 +3,224 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RADITZ OJOL PRO</title>
+    <title>RADITZ OJOL PRO - Dashboard</title>
     <style>
         :root {
-            --primary: #2563eb;
-            --success: #22c55e;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --bg: #f1f5f9;
+            --primary: #1e88e5;
+            --success: #2e7d32;
+            --danger: #d32f2f;
+            --bg: #f4f7f6;
         }
 
-        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); padding-bottom: 90px; }
-        .header { background: var(--primary); color: white; padding: 15px; text-align: center; font-weight: bold; position: sticky; top:0; z-index:10; }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); padding-bottom: 70px; }
+        
+        /* LOGIN OVERLAY */
+        #loginPage { 
+            position: fixed; inset: 0; background: white; z-index: 1000; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
+        }
+
+        .header { background: var(--primary); color: white; padding: 15px; text-align: center; font-weight: bold; }
         .container { padding: 15px; max-width: 500px; margin: auto; }
-        
         .page { display: none; }
-        .page.active { display: block; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        h3 { margin-top: 0; font-size: 1.1rem; color: #334155; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; }
+        .page.active { display: block; }
         
-        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #cbd5e1; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .grid-dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-success { background: var(--success); color: white; }
-        .btn-danger { background: #fee2e2; color: var(--danger); font-size: 0.8rem; }
-        .btn-pay { background: #dcfce7; color: #166534; width: auto; padding: 5px 12px; font-size: 0.8rem; }
-
-        .flex-between { display: flex; justify-content: space-between; align-items: center; margin: 5px 0; }
-        .allocation-box { background: #f8fafc; padding: 10px; border-radius: 8px; margin-top: 10px; border-left: 4px solid var(--primary); }
+        input, button { width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; }
+        button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
         
-        .navbar { position: fixed; bottom: 0; width: 100%; display: flex; background: white; border-top: 1px solid #e2e8f0; }
-        .navbar button { flex: 1; background: none; color: #64748b; padding: 15px 0; border-radius: 0; }
-        .navbar button.active { color: var(--primary); font-weight: bold; border-top: 3px solid var(--primary); }
+        .navbar { position: fixed; bottom: 0; width: 100%; display: flex; background: white; border-top: 1px solid #ccc; }
+        .navbar button { flex: 1; background: none; color: #666; border: none; padding: 15px; }
+        .navbar button.active { color: var(--primary); font-weight: bold; }
 
-        .badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; font-weight: bold; }
-        .badge-info { background: #e0f2fe; color: #0369a1; }
+        .stat-label { font-size: 0.8rem; color: #666; }
+        .stat-value { font-size: 1.1rem; font-weight: bold; display: block; }
     </style>
 </head>
 <body>
 
-<div class="header">RADITZ OJOL PRO</div>
-
-<div class="container">
-    <div id="page1" class="page active">
-        <div class="card">
-            <h3>🚗 Input Order</h3>
-            <input type="text" id="namaPelanggan" placeholder="Nama Pelanggan">
-            <input type="number" id="jarak" placeholder="Jarak (km)">
-            <button class="btn-primary" onclick="hitungOngkos()">Hitung & Simpan</button>
-        </div>
-        <div id="hasilOrder"></div>
-    </div>
-
-    <div id="page2" class="page">
-        <div class="card">
-            <h3>📊 Rekap & Alokasi Hari Ini</h3>
-            <div class="flex-between"><span>Total Pendapatan:</span> <b id="totalHarian">Rp 0</b></div>
-            
-            <div class="allocation-box">
-                <div class="flex-between"><small>🏠 Kebutuhan (50%)</small> <span id="aloKebutuhan">Rp 0</span></div>
-                <div class="flex-between"><small>🏦 Tabungan (30%)</small> <span id="aloTabungan">Rp 0</span></div>
-                <div class="flex-between"><small>🛠️ Perawatan (20%)</small> <span id="aloPerawatan">Rp 0</span></div>
-            </div>
-            <button class="btn-danger" style="margin-top:15px" onclick="resetKeuangan()">Reset Data Hari Ini</button>
-        </div>
-    </div>
-
-    <div id="page3" class="page">
-        <div class="card">
-            <h3>📝 Manajemen Cicilan</h3>
-            <input type="text" id="namaCicilan" placeholder="Nama Barang (misal: Motor)">
-            <input type="number" id="totalHutang" placeholder="Total Sisa Hutang (Rp)">
-            <input type="number" id="cicilanBulan" placeholder="Tagihan per Bulan (Rp)">
-            <button class="btn-primary" onclick="tambahCicilan()">Tambah Cicilan</button>
-        </div>
-        <div id="listCicilan"></div>
-    </div>
+<div id="loginPage">
+    <h2>RADITZ OJOL PRO</h2>
+    <input type="text" id="userInput" placeholder="Username">
+    <input type="password" id="passInput" placeholder="Password">
+    <button onclick="login()">Masuk / Daftar</button>
 </div>
 
-<div class="navbar">
-    <button onclick="showPage(1, this)" class="active">Order</button>
-    <button onclick="showPage(2, this)">Keuangan</button>
-    <button onclick="showPage(3, this)">Cicilan</button>
+<div id="mainApp" style="display:none">
+    <div class="header" id="welcomeUser">RADITZ OJOL PRO</div>
+
+    <div class="container">
+        <div id="page0" class="page active">
+            <div class="card">
+                <h3>🏠 Dashboard Utama</h3>
+                <div class="grid-dashboard">
+                    <div class="card" style="margin:0; background: #e3f2fd;">
+                        <span class="stat-label">Pendapatan Hari Ini</span>
+                        <span class="stat-value" id="dashHarian">Rp 0</span>
+                    </div>
+                    <div class="card" style="margin:0; background: #e8f5e9;">
+                        <span class="stat-label">Total Tabungan</span>
+                        <span class="stat-value" id="dashTabungan">Rp 0</span>
+                    </div>
+                </div>
+                <div class="card" style="margin-top:10px; background: #fff3e0;">
+                    <span class="stat-label">Saldo Kebutuhan (Siap Pakai)</span>
+                    <span class="stat-value" id="dashKebutuhan">Rp 0</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="page1" class="page">
+            <div class="card">
+                <h3>🚗 Input Order</h3>
+                <input type="text" id="namaPelanggan" placeholder="Nama Pelanggan">
+                <input type="number" id="jarak" placeholder="Jarak (km)">
+                <button onclick="hitungOngkos()">Simpan Order</button>
+            </div>
+        </div>
+
+        <div id="page2" class="page">
+            <div class="card">
+                <h3>💰 Kelola Keuangan</h3>
+                <input type="number" id="pendapatanLain" placeholder="Pendapatan Tambahan (Rp)">
+                <button style="background: var(--success)" onclick="tambahPendapatanLain()">Tambah Pendapatan</button>
+                <hr>
+                <input type="number" id="pengeluaranHari" placeholder="Pengeluaran Harian (Rp)">
+                <button style="background: var(--danger)" onclick="catatPengeluaran()">Catat Pengeluaran</button>
+            </div>
+            
+            <div class="card">
+                <h3>📊 Alokasi Saat Ini</h3>
+                <p>Kebutuhan: <b id="textKebutuhan">0</b></p>
+                <p>Tabungan: <b id="textTabungan">0</b></p>
+                <p>Perawatan (20%): <b id="textPerawatan">0</b></p>
+            </div>
+        </div>
+
+        <div id="page3" class="page">
+            <div class="card" style="text-align: center;">
+                <h3>🏦 Brankas Tabungan</h3>
+                <h1 id="totalTabunganBesar">Rp 0</h1>
+                <p>Data ini otomatis bertambah dari 30% setiap orderan/pendapatan yang masuk.</p>
+                <button onclick="logout()" style="background:#666">Keluar Aplikasi</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="navbar">
+        <button onclick="showPage(0, this)" class="active">Home</button>
+        <button onclick="showPage(1, this)">Order</button>
+        <button onclick="showPage(2, this)">Keuangan</button>
+        <button onclick="showPage(3, this)">Tabungan</button>
+    </div>
 </div>
 
 <script>
-    let dataPendapatan = JSON.parse(localStorage.getItem("pendapatan")) || [];
-    let dataCicilan = JSON.parse(localStorage.getItem("cicilan")) || [];
+    let currentUser = "";
+    let userData = {};
+
+    function login() {
+        let user = document.getElementById('userInput').value;
+        let pass = document.getElementById('passInput').value;
+        if(!user || !pass) return alert("Isi User & Password");
+
+        currentUser = user;
+        let stored = JSON.parse(localStorage.getItem("ojol_user_" + user));
+        
+        if(stored) {
+            if(stored.pass !== pass) return alert("Password Salah!");
+            userData = stored;
+        } else {
+            userData = {
+                pass: pass,
+                pendapatan: [],
+                saldoKebutuhan: 0,
+                saldoTabungan: 0,
+                saldoPerawatan: 0
+            };
+            saveData();
+        }
+
+        document.getElementById('loginPage').style.display = 'none';
+        document.getElementById('mainApp').style.display = 'block';
+        document.getElementById('welcomeUser').innerText = "Halo, " + user.toUpperCase();
+        updateUI();
+    }
+
+    function saveData() {
+        localStorage.setItem("ojol_user_" + currentUser, JSON.stringify(userData)); 
+    }
 
     function showPage(num, btn) {
         document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
         document.querySelectorAll(".navbar button").forEach(b => b.classList.remove("active"));
         document.getElementById("page" + num).classList.add("active");
         btn.classList.add("active");
-        if(num === 2) updateRekap();
+        updateUI();
     }
 
-    // --- LOGIKA ORDER ---
     function hitungOngkos() {
-        let nama = document.getElementById("namaPelanggan").value;
         let jarak = parseFloat(document.getElementById("jarak").value);
-        if (!nama || isNaN(jarak)) return alert("Isi data dengan benar!");
-
+        if(isNaN(jarak)) return;
         let total = (jarak <= 2) ? 5000 : 5000 + ((jarak - 2) * 2000);
         
-        // Langsung simpan
-        dataPendapatan.push({ id: Date.now(), tgl: new Date().toLocaleDateString(), total: total });
-        localStorage.setItem("pendapatan", JSON.stringify(dataPendapatan));
-        
-        document.getElementById("hasilOrder").innerHTML = `
-            <div class="card" style="border-left: 5px solid var(--success)">
-                <small>Berhasil disimpan!</small><br>
-                <b>${nama}</b>: Rp ${total.toLocaleString()}
-            </div>`;
-        
-        document.getElementById("namaPelanggan").value = "";
+        prosesMasukUang(total);
+        alert("Order Berhasil: Rp " + total.toLocaleString());
         document.getElementById("jarak").value = "";
-        updateRekap();
     }
 
-    // --- LOGIKA KEUANGAN (AUTO ALOKASI) --- 
-    function updateRekap() {
-        let hariIni = new Date().toLocaleDateString();
-        let total = dataPendapatan
-            .filter(d => d.tgl === hariIni)
-            .reduce((sum, item) => sum + item.total, 0);
-
-        document.getElementById("totalHarian").innerText = `Rp ${total.toLocaleString()}`;
-        document.getElementById("aloKebutuhan").innerText = `Rp ${(total * 0.5).toLocaleString()}`;
-        document.getElementById("aloTabungan").innerText = `Rp ${(total * 0.3).toLocaleString()}`;
-        document.getElementById("aloPerawatan").innerText = `Rp ${(total * 0.2).toLocaleString()}`;
+    function tambahPendapatanLain() {
+        let nominal = parseFloat(document.getElementById("pendapatanLain").value);
+        if(isNaN(nominal)) return;
+        prosesMasukUang(nominal);
+        document.getElementById("pendapatanLain").value = "";
     }
 
-    function resetKeuangan() {
-        if(confirm("Hapus rekap hari ini?")) {
-            let hariIni = new Date().toLocaleDateString();
-            dataPendapatan = dataPendapatan.filter(d => d.tgl !== hariIni);
-            localStorage.setItem("pendapatan", JSON.stringify(dataPendapatan));
-            updateRekap();
-        }
+    function prosesMasukUang(nominal) {
+        userData.saldoKebutuhan += (nominal * 0.5); 
+        userData.saldoTabungan += (nominal * 0.3); 
+        userData.saldoPerawatan += (nominal * 0.2); 
+        userData.pendapatan.push({tgl: new Date().toLocaleDateString(), total: nominal}); 
+        saveData();
+        updateUI();
     }
 
-    // --- LOGIKA CICILAN (AUTO REDUCE) ---
-    function tambahCicilan() {
-        let nama = document.getElementById("namaCicilan").value;
-        let sisa = parseFloat(document.getElementById("totalHutang").value);
-        let perBulan = parseFloat(document.getElementById("cicilanBulan").value);
-
-        if(!nama || isNaN(sisa) || isNaN(perBulan)) return alert("Lengkapi data!");
-
-        dataCicilan.push({ id: Date.now(), nama, sisa, perBulan, lunas: false });
-        localStorage.setItem("cicilan", JSON.stringify(dataCicilan));
-        tampilkanCicilan();
+    function catatPengeluaran() {
+        let nominal = parseFloat(document.getElementById("pengeluaranHari").value);
+        if(isNaN(nominal)) return;
+        if(nominal > userData.saldoKebutuhan) return alert("Saldo Kebutuhan Tidak Cukup!");
         
-        // Reset input
-        document.getElementById("namaCicilan").value = "";
-        document.getElementById("totalHutang").value = "";
-        document.getElementById("cicilanBulan").value = "";
+        userData.saldoKebutuhan -= nominal;
+        saveData();
+        updateUI();
+        document.getElementById("pengeluaranHari").value = "";
     }
 
-    function bayarCicilan(id) {
-        dataCicilan = dataCicilan.map(c => {
-            if(c.id === id) {
-                let sisaBaru = c.sisa - c.perBulan;
-                if(sisaBaru <= 0) return { ...c, sisa: 0, lunas: true };
-                return { ...c, sisa: sisaBaru };
-            }
-            return c;
-        });
-        localStorage.setItem("cicilan", JSON.stringify(dataCicilan));
-        tampilkanCicilan();
+    function updateUI() {
+        let hariIni = new Date().toLocaleDateString();
+        let totalHariIni = userData.pendapatan
+            .filter(d => d.tgl === hariIni)
+            .reduce((sum, item) => sum + item.total, 0); 
+
+        // Dashboard
+        document.getElementById("dashHarian").innerText = "Rp " + totalHariIni.toLocaleString(); 
+        document.getElementById("dashTabungan").innerText = "Rp " + userData.saldoTabungan.toLocaleString();
+        document.getElementById("dashKebutuhan").innerText = "Rp " + userData.saldoKebutuhan.toLocaleString();
+
+        // Keuangan Page
+        document.getElementById("textKebutuhan").innerText = "Rp " + userData.saldoKebutuhan.toLocaleString();
+        document.getElementById("textTabungan").innerText = "Rp " + userData.saldoTabungan.toLocaleString();
+        document.getElementById("textPerawatan").innerText = "Rp " + userData.saldoPerawatan.toLocaleString();
+
+        // Tabungan Page
+        document.getElementById("totalTabunganBesar").innerText = "Rp " + userData.saldoTabungan.toLocaleString();
     }
 
-    function hapusCicilan(id) {
-        if(confirm("Hapus data cicilan ini?")) {
-            dataCicilan = dataCicilan.filter(c => c.id !== id);
-            localStorage.setItem("cicilan", JSON.stringify(dataCicilan));
-            tampilkanCicilan();
-        }
+    function logout() {
+        location.reload();
     }
-
-    function tampilkanCicilan() {
-        let html = "";
-        dataCicilan.forEach(c => {
-            html += `
-                <div class="card">
-                    <div class="flex-between">
-                        <strong>${c.nama}</strong>
-                        ${c.lunas ? '<span class="badge" style="background:#dcfce7;color:#166534">LUNAS</span>' : '<span class="badge badge-info">Berjalan</span>'}
-                    </div>
-                    <div class="flex-between" style="margin-top:10px">
-                        <small>Sisa Hutang: <br><b>Rp ${c.sisa.toLocaleString()}</b></small>
-                        <small>Tagihan/Bulan: <br><b>Rp ${c.perBulan.toLocaleString()}</b></small>
-                    </div>
-                    <div class="flex-between" style="margin-top:15px">
-                        ${!c.lunas ? `<button class="btn-pay" onclick="bayarCicilan(${c.id})">Bayar 1 Bulan</button>` : '<span></span>'}
-                        <button class="btn-danger" style="width:auto; padding:5px 10px" onclick="hapusCicilan(${c.id})">Hapus</button>
-                    </div>
-                </div>`;
-        });
-        document.getElementById("listCicilan").innerHTML = html || "<p style='text-align:center; color:#64748b'>Belum ada cicilan.</p>";
-    }
-
-    // Init
-    updateRekap();
-    tampilkanCicilan();
 </script>
 
 </body>
