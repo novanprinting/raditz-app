@@ -3,41 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RADITZ OJEK PRO</title>
     <link rel="icon" type="image/png" sizes="512x512" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     <meta name="theme-color" content="#1e88e5">
     <link rel="manifest" href="manifest.json">
-    <title>RADIT OJEK ONLINE</title>
     <style>
-        :root { --primary: #1e88e5; --success: #2e7d32; --danger: #d32f2f; --bg: #f0f2f5; }
+        :root {
+            --primary: #1e88e5;
+            --success: #2e7d32;
+            --danger: #d32f2f;
+            --bg: #f0f2f5;
+        }
+
         body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); padding-bottom: 80px; color: #333; }
         .header { background: var(--primary); color: white; padding: 15px; text-align: center; font-weight: bold; position: sticky; top:0; z-index: 10; }
         .container { padding: 12px; max-width: 500px; margin: auto; }
-        .page { display: none; } .page.active { display: block; }
+        
+        .page { display: none; }
+        .page.active { display: block; }
+        
         .card { background: white; padding: 15px; border-radius: 15px; margin-bottom: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         h3 { margin: 0 0 10px 0; font-size: 1rem; color: var(--primary); border-bottom: 1px solid #eee; padding-bottom: 5px; }
-        input, button { width: 100%; padding: 12px; margin-top: 8px; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; font-size: 14px; }
+        
+        input, select, button { width: 100%; padding: 12px; margin-top: 8px; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; font-size: 14px; }
         button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
+        
         .grid-db { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .stat-box { padding: 10px; border-radius: 10px; text-align: center; }
         .blue { background: #e3f2fd; } .green { background: #e8f5e9; } .orange { background: #fff3e0; } .red { background: #ffebee; }
+        
         .navbar { position: fixed; bottom: 0; width: 100%; display: flex; background: white; border-top: 1px solid #ddd; height: 65px; z-index: 100; }
-        .navbar button { flex: 1; background: none; color: #777; border: none; font-size: 12px; }
+        .navbar button { flex: 1; background: none; color: #777; border: none; padding: 0; margin: 0; border-radius: 0; font-size: 12px; }
         .navbar button.active { color: var(--primary); font-weight: bold; }
+
         .history-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
         .btn-del { width: auto; background: #fee2e2; color: var(--danger); padding: 5px 10px; margin: 0; font-size: 11px; }
-        .btn-reset { background: var(--danger); margin-top: 20px; }
+
+        @media print {
+            .navbar, .header, button, input, .no-print, .btn-del { display: none !important; }
+            .page { display: block !important; }
+            .card { box-shadow: none; border: 1px solid #eee; margin-bottom: 20px; }
+        }
     </style>
 </head>
 <body>
 
-<div class="header">RADITZ OJEK ONLINE</div>
+<div class="header">RADITZ OJEK PRO</div>
 
 <div class="container">
     <div id="page0" class="page active">
         <div class="card">
-            <h3>📊 Rekap Harian</h3>
-            <input type="date" id="filterTanggal" onchange="updateAll()">
+            <h3>?? Rekap Pendapatan & Pengeluaran</h3>
+            <input type="date" id="filterTanggal" onchange="updateDashboard()">
             <div class="grid-db" style="margin-top:15px">
                 <div class="stat-box blue"><small>Pend. Harian</small><b id="dbHarian">Rp 0</b></div>
                 <div class="stat-box red"><small>Peng. Harian</small><b id="dbOutHarian" style="color:var(--danger)">Rp 0</b></div>
@@ -45,13 +63,14 @@
                 <div class="stat-box blue"><small>Tahunan</small><b id="dbTahunan">Rp 0</b></div>
             </div>
         </div>
-        <div class="card green"><h3>🏦 Tabungan</h3><h2 id="dbTabungan">Rp 0</h2></div>
-        <div class="card orange"><h3>🏠 Kebutuhan</h3><h2 id="dbKebutuhan">Rp 0</h2></div>
+        <div class="card green"><h3>?? Tabungan (30%)</h3><h2 id="dbTabungan">Rp 0</h2></div>
+        <div class="card orange"><h3>?? Kebutuhan (50%)</h3><h2 id="dbKebutuhan">Rp 0</h2></div>
+        <button onclick="window.print()" style="background:#333; margin-top:10px;">??? Cetak Laporan PDF</button>
     </div>
 
     <div id="page1" class="page">
         <div class="card">
-            <h3>🚗 Input Order Baru</h3>
+            <h3>?? Input Order Baru</h3>
             <input type="text" id="custName" placeholder="Nama Pelanggan">
             <input type="number" id="dist" placeholder="Jarak (km)">
             <button onclick="addOrder()">Simpan Data</button>
@@ -60,13 +79,13 @@
 
     <div id="page2" class="page">
         <div class="card">
-            <h3>💰 Tambah Pendapatan</h3>
+            <h3>?? Tambah Pendapatan (Bonus)</h3>
             <input type="number" id="inNominal" placeholder="Nominal (Rp)">
             <input type="text" id="inNote" placeholder="Catatan">
             <button style="background:var(--success)" onclick="addExtra('IN')">Simpan Pendapatan</button>
         </div>
         <div class="card">
-            <h3>💸 Catat Pengeluaran</h3>
+            <h3>?? Catat Pengeluaran</h3>
             <input type="number" id="outNominal" placeholder="Nominal (Rp)">
             <input type="text" id="outNote" placeholder="Catatan">
             <button style="background:var(--danger)" onclick="addExtra('OUT')">Simpan Pengeluaran</button>
@@ -75,13 +94,13 @@
 
     <div id="page3" class="page">
         <div class="card" style="text-align: center;">
-            <h3>🏦 Saldo Tabungan</h3>
+            <h3>?? Saldo Tabungan</h3>
             <h1 id="tabTotal">Rp 0</h1>
         </div>
     </div>
 </div>
 
-<div class="navbar">
+<div class="navbar no-print">
     <button onclick="showPage(0, this)" class="active">Home</button>
     <button onclick="showPage(1, this)">Order</button>
     <button onclick="showPage(2, this)">Keuangan</button>
@@ -89,26 +108,21 @@
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('ojol_db')) || { transaksi: [], saldoKebutuhan: 0, saldoTabungan: 0 };
-
-    function hapusSemuaData() {
-        if (confirm("HAPUS SEMUA DATA? Tindakan ini tidak bisa dibatalkan.")) {
-            db = { transaksi: [], saldoKebutuhan: 0, saldoTabungan: 0 };
-            localStorage.removeItem('ojol_db');
-            updateAll();
-            alert("Semua data riwayat dan saldo telah dikosongkan.");
-        }
-    }
+    let db = JSON.parse(localStorage.getItem('ojol_db')) || {
+        transaksi: [], saldoKebutuhan: 0, saldoTabungan: 0, saldoPerawatan: 0
+    };
 
     function showPage(num, btn) {
         document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
         document.querySelectorAll(".navbar button").forEach(b => b.classList.remove("active"));
         document.getElementById("page" + num).classList.add("active");
         if(btn) btn.classList.add("active");
-        updateAll();
+        
+        updateDashboard();
+        renderHistory(); // Pastikan history dirender setiap pindah halaman
     }
 
-    function updateAll() {
+    function saveAndRefresh() {
         localStorage.setItem('ojol_db', JSON.stringify(db));
         updateDashboard();
         renderHistory();
@@ -118,59 +132,123 @@
         let name = document.getElementById('custName').value;
         let dist = parseFloat(document.getElementById('dist').value);
         if(!name || isNaN(dist)) return alert("Isi data!");
+        
         let total = (dist <= 2) ? 5000 : 5000 + ((dist - 2) * 2000);
-        db.transaksi.push({ id: Date.now(), tgl: new Date().toISOString(), tipe: 'IN', jenis: 'ORDER', ket: `Order: ${name}`, val: total });
-        db.saldoKebutuhan += (total * 0.5); db.saldoTabungan += (total * 0.3);
-        document.getElementById('custName').value = ""; document.getElementById('dist').value = "";
-        updateAll();
+        db.transaksi.push({ 
+            id: Date.now(), 
+            tgl: new Date().toISOString(), 
+            tipe: 'IN', 
+            jenis: 'ORDER', 
+            ket: 'Order: ' + name + ' (' + dist + 'km)', 
+            val: total 
+        });
+        
+        db.saldoKebutuhan += (total * 0.5); 
+        db.saldoTabungan += (total * 0.3); 
+        db.saldoPerawatan += (total * 0.2);
+        
+        document.getElementById('custName').value = ""; 
+        document.getElementById('dist').value = "";
+        saveAndRefresh();
     }
 
     function addExtra(type) {
         let nom = parseFloat(document.getElementById(type === 'IN' ? 'inNominal' : 'outNominal').value);
         let note = document.getElementById(type === 'IN' ? 'inNote' : 'outNote').value;
         if(isNaN(nom)) return alert("Isi nominal!");
-        db.transaksi.push({ id: Date.now(), tgl: new Date().toISOString(), tipe: type, jenis: 'EXTRA', ket: note || 'Trx', val: nom });
-        if(type === 'IN') { db.saldoKebutuhan += (nom * 0.5); db.saldoTabungan += (nom * 0.3); } 
-        else { db.saldoKebutuhan -= nom; }
+        
+        if(type === 'OUT' && nom > db.saldoKebutuhan) return alert("Saldo kebutuhan tidak cukup!");
+        
+        db.transaksi.push({ 
+            id: Date.now(), 
+            tgl: new Date().toISOString(), 
+            tipe: type, 
+            jenis: 'EXTRA', 
+            ket: note || (type === 'IN' ? 'Pendapatan Lain' : 'Pengeluaran'), 
+            val: nom 
+        });
+        
+        if(type === 'IN') { 
+            db.saldoKebutuhan += (nom * 0.5); 
+            db.saldoTabungan += (nom * 0.3); 
+        } else { 
+            db.saldoKebutuhan -= nom; 
+        }
+        
         document.getElementById(type === 'IN' ? 'inNominal' : 'outNominal').value = "";
-        updateAll();
+        document.getElementById(type === 'IN' ? 'inNote' : 'outNote').value = "";
+        saveAndRefresh();
     }
 
     function renderHistory() {
-        let hKeuangan = "", hOrder = "";
+        let htmlKeuangan = "";
+        let htmlOrder = "";
         let filterDate = document.getElementById('filterTanggal').value || new Date().toISOString().split('T')[0];
-        [...db.transaksi].reverse().forEach(t => {
+        
+        // Urutkan dari yang terbaru
+        let sortedTrx = [...db.transaksi].reverse();
+
+        sortedTrx.forEach(t => {
             let tDate = new Date(t.tgl).toISOString().split('T')[0];
-            let item = `<div class="history-item"><div><b>${t.tipe === 'IN' ? '+' : '-'} Rp ${t.val.toLocaleString()}</b><br><small>${t.ket}</small></div><button class="btn-del" onclick="deleteTrx(${t.id})">Del</button></div>`;
-            hKeuangan += item;
-            if(t.jenis === 'ORDER' && tDate === filterDate) hOrder += item;
+            let itemHtml = `
+                <div class="history-item">
+                    <div>
+                        <b style="color:${t.tipe === 'IN' ? 'var(--success)' : 'var(--danger)'}">
+                            ${t.tipe === 'IN' ? '+' : '-'} Rp ${t.val.toLocaleString()}
+                        </b><br>
+                        <small>${t.ket}</small>
+                    </div>
+                    <button class="btn-del no-print" onclick="deleteTrx(${t.id})">Del</button>
+                </div>`;
+
+            // Riwayat Keuangan (Page 2) - Tampilkan semua jenis transaksi
+            htmlKeuangan += itemHtml;
+
+            // Riwayat Order (Page 1) - Hanya tampilkan jenis 'ORDER' untuk tanggal terpilih
+            if(t.jenis === 'ORDER' && tDate === filterDate) {
+                htmlOrder += itemHtml;
+            }
         });
-        document.getElementById('historyContainer').innerHTML = hKeuangan || "<small>Data kosong.</small>";
-        document.getElementById('orderHistoryContainer').innerHTML = hOrder || "<small>Data kosong.</small>";
+
+        document.getElementById('historyContainer').innerHTML = htmlKeuangan || "<small>Belum ada transaksi.</small>";
+        document.getElementById('orderHistoryContainer').innerHTML = htmlOrder || "<small>Belum ada order hari ini.</small>";
     }
 
     function deleteTrx(id) {
+        if(!confirm("Hapus transaksi ini? Saldo akan disesuaikan otomatis.")) return;
         let t = db.transaksi.find(x => x.id === id);
-        if(t.tipe === 'IN') { db.saldoKebutuhan -= (t.val * 0.5); db.saldoTabungan -= (t.val * 0.3); } 
-        else { db.saldoKebutuhan += t.val; }
+        if(!t) return;
+
+        if(t.tipe === 'IN') { 
+            db.saldoKebutuhan -= (t.val * 0.5); 
+            db.saldoTabungan -= (t.val * 0.3); 
+        } else { 
+            db.saldoKebutuhan += t.val; 
+        }
+        
         db.transaksi = db.transaksi.filter(x => x.id !== id);
-        updateAll();
+        saveAndRefresh();
     }
 
     function updateDashboard() {
         let filter = document.getElementById('filterTanggal').value;
         let refDate = filter ? new Date(filter) : new Date();
         let harian = 0, bulanan = 0, tahunan = 0, outHarian = 0;
+
         db.transaksi.forEach(t => {
             let tDate = new Date(t.tgl);
+            // Hitung Pendapatan
             if(t.tipe === 'IN') {
                 if(tDate.toDateString() === refDate.toDateString()) harian += t.val;
                 if(tDate.getMonth() === refDate.getMonth() && tDate.getFullYear() === refDate.getFullYear()) bulanan += t.val;
                 if(tDate.getFullYear() === refDate.getFullYear()) tahunan += t.val;
-            } else if (tDate.toDateString() === refDate.toDateString()) {
+            }
+            // Hitung Pengeluaran Harian
+            if(t.tipe === 'OUT' && tDate.toDateString() === refDate.toDateString()) {
                 outHarian += t.val;
             }
         });
+
         document.getElementById('dbHarian').innerText = "Rp " + harian.toLocaleString();
         document.getElementById('dbOutHarian').innerText = "Rp " + outHarian.toLocaleString();
         document.getElementById('dbBulanan').innerText = "Rp " + bulanan.toLocaleString();
@@ -180,8 +258,10 @@
         document.getElementById('tabTotal').innerText = "Rp " + db.saldoTabungan.toLocaleString();
     }
 
+    // Inisialisasi awal
     document.getElementById('filterTanggal').valueAsDate = new Date();
-    updateAll();
+    updateDashboard();
+    renderHistory();
 </script>
 </body>
 </html>
