@@ -54,7 +54,7 @@
 <div class="container">
     <div id="page0" class="page active">
         <div class="card">
-            <h3>?? Rekap Pendapatan & Pengeluaran</h3>
+            <h3>📊 Rekap Pendapatan & Pengeluaran</h3>
             <input type="date" id="filterTanggal" onchange="updateDashboard()">
             <div class="grid-db" style="margin-top:15px">
                 <div class="stat-box blue"><small>Pend. Harian</small><b id="dbHarian">Rp 0</b></div>
@@ -63,46 +63,46 @@
                 <div class="stat-box blue"><small>Tahunan</small><b id="dbTahunan">Rp 0</b></div>
             </div>
         </div>
-        <div class="card green"><h3>?? Tabungan (30%)</h3><h2 id="dbTabungan">Rp 0</h2></div>
-        <div class="card orange"><h3>?? Kebutuhan (50%)</h3><h2 id="dbKebutuhan">Rp 0</h2></div>
-        <button onclick="window.print()" style="background:#333; margin-top:10px;">??? Cetak Laporan PDF</button>
+        <div class="card green"><h3>🏦 Tabungan (30%)</h3><h2 id="dbTabungan">Rp 0</h2></div>
+        <div class="card orange"><h3>🏠 Kebutuhan (50%)</h3><h2 id="dbKebutuhan">Rp 0</h2></div>
+        <button onclick="window.print()" style="background:#333; margin-top:10px;">🖨️ Cetak Laporan PDF</button>
     </div>
 
     <div id="page1" class="page">
         <div class="card">
-            <h3>?? Input Order Baru</h3>
+            <h3>🚗 Input Order Baru</h3>
             <input type="text" id="custName" placeholder="Nama Pelanggan">
             <input type="number" id="dist" placeholder="Jarak (km)">
             <button onclick="addOrder()">Simpan Data</button>
         </div>
         <div class="card">
-            <h3>?? Riwayat Order Hari Ini</h3>
+            <h3>📋 Riwayat Order Hari Ini</h3>
             <div id="orderHistoryContainer"></div>
         </div>
     </div>
 
     <div id="page2" class="page">
         <div class="card">
-            <h3>?? Tambah Pendapatan (Bonus)</h3>
+            <h3>💰 Tambah Pendapatan (Bonus)</h3>
             <input type="number" id="inNominal" placeholder="Nominal (Rp)">
             <input type="text" id="inNote" placeholder="Catatan">
             <button style="background:var(--success)" onclick="addExtra('IN')">Simpan Pendapatan</button>
         </div>
         <div class="card">
-            <h3>?? Catat Pengeluaran</h3>
+            <h3>💸 Catat Pengeluaran</h3>
             <input type="number" id="outNominal" placeholder="Nominal (Rp)">
             <input type="text" id="outNote" placeholder="Catatan">
             <button style="background:var(--danger)" onclick="addExtra('OUT')">Simpan Pengeluaran</button>
         </div>
         <div class="card">
-            <h3>?? Riwayat Transaksi</h3>
+            <h3>📋 Riwayat Transaksi</h3>
             <div id="historyContainer"></div>
         </div>
     </div>
 
     <div id="page3" class="page">
         <div class="card" style="text-align: center;">
-            <h3>?? Saldo Tabungan</h3>
+            <h3>🏦 Saldo Tabungan</h3>
             <h1 id="tabTotal">Rp 0</h1>
         </div>
     </div>
