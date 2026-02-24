@@ -1,216 +1,318 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RADITZ OJOL PRO</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RADITZ OJOL PRO</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #64748b;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --bg: #f8fafc;
+            --card: #ffffff;
+        }
 
-<style>
-body {
-margin:0;
-font-family:Arial;
-background:#f2f2f2;
-}
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: #1e293b;
+            padding-bottom: 80px;
+        }
 
-.header {
-background:#1e88e5;
-color:white;
-padding:15px;
-text-align:center;
-font-weight:bold;
-}
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 800;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
-.page {
-display:none;
-padding:15px;
-}
+        .container { padding: 15px; max-width: 500px; margin: auto; }
 
-.active {
-display:block;
-}
+        .page { display: none; animation: fadeIn 0.3s ease; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-input, button {
-width:100%;
-padding:10px;
-margin-top:10px;
-border-radius:8px;
-border:1px solid #ccc;
-}
+        .card {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+        }
 
-button {
-background:#1e88e5;
-color:white;
-border:none;
-}
+        h3 { margin-top: 0; color: var(--primary); font-size: 1.1rem; }
 
-.card {
-background:white;
-padding:15px;
-border-radius:12px;
-margin-top:15px;
-}
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; color: var(--secondary); }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            box-sizing: border-box;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+        input:focus { outline: none; border-color: var(--primary); }
 
-.navbar {
-position:fixed;
-bottom:0;
-width:100%;
-display:flex;
-background:white;
-border-top:1px solid #ccc;
-}
+        button {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            font-size: 1rem;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-success { background: var(--success); color: white; margin-top: 10px; }
+        .btn-outline-danger { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 5px 10px; font-size: 0.8rem; width: auto; }
 
-.navbar button {
-flex:1;
-border:none;
-background:white;
-padding:12px;
-font-size:14px;
-}
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .stat-box { background: #f1f5f9; padding: 12px; border-radius: 10px; text-align: center; }
+        .stat-val { display: block; font-weight: bold; color: var(--primary); }
 
-.navbar button.active {
-color:#1e88e5;
-font-weight:bold;
-}
-</style>
+        .navbar {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            display: flex;
+            background: white;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            padding: 10px 0;
+        }
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            background: none;
+            border: none;
+            color: var(--secondary);
+            font-size: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .nav-item.active { color: var(--primary); }
+        
+        .progress-bar { height: 8px; background: #e2e8f0; border-radius: 4px; margin: 10px 0; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); }
+
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+    </style>
 </head>
 <body>
 
-<div class="header">
-RADITZ OJOL PRO
-</div>
+<div class="header">RADITZ OJOL PRO</div>
 
-<!-- PAGE 1 -->
-<div id="page1" class="page active">
-<h3>Penerimaan Order</h3>
+<div class="container">
+    <div id="page1" class="page active">
+        <div class="card">
+            <h3>🚀 Order Baru</h3>
+            <div class="input-group">
+                <label>Nama Pelanggan</label>
+                <input type="text" id="namaPelanggan" placeholder="Contoh: Budi">
+            </div>
+            <div class="stat-grid">
+                <div class="input-group">
+                    <label>Jarak (km)</label>
+                    <input type="number" id="jarak" placeholder="0">
+                </div>
+                <div class="input-group">
+                    <label>Tarif/km</label>
+                    <input type="number" id="tarif" value="4000">
+                </div>
+            </div>
+            <button class="btn-primary" onclick="hitungOngkos()">Cek Ongkos</button>
+        </div>
+        <div id="hasilOrder"></div>
+    </div>
 
-<input type="text" id="namaPelanggan" placeholder="Nama Pelanggan">
-<input type="number" id="jarak" placeholder="Jarak (km)">
-<input type="number" id="tarif" placeholder="Tarif per km (Rp)" value="4000">
+    <div id="page2" class="page">
+        <div class="card">
+            <h3>💰 Input Pendapatan Luar</h3>
+            <input type="number" id="totalPendapatan" placeholder="Masukkan Rp...">
+            <button class="btn-primary" style="margin-top:10px" onclick="hitungPembagianManual()">Simpan ke Rekap</button>
+        </div>
 
-<button onclick="hitungOngkos()">Hitung Ongkos</button>
+        <div class="card">
+            <h3>📊 Ringkasan Pendapatan</h3>
+            <div class="stat-grid">
+                <div class="stat-box">
+                    <small>Hari Ini</small>
+                    <span class="stat-val" id="rekapHarian">Rp 0</span>
+                </div>
+                <div class="stat-box">
+                    <small>Bulan Ini</small>
+                    <span class="stat-val" id="rekapBulanan">Rp 0</span>
+                </div>
+            </div>
+        </div>
 
-<div class="card" id="hasilOrder"></div>
-</div>
+        <div class="card" id="hasilPembagian">
+            <h3>🏦 Alokasi Dana</h3>
+            <p style="font-size: 0.9rem; color: var(--secondary)">Berdasarkan total bulan ini</p>
+            <div id="alokasiDetail"></div>
+        </div>
+    </div>
 
-<!-- PAGE 2 -->
-<div id="page2" class="page">
-<h3>Pembagian Pendapatan</h3>
-
-<input type="number" id="totalPendapatan" placeholder="Total Pendapatan Hari Ini (Rp)">
-<button onclick="hitungPembagian()">Hitung Pembagian</button>
-
-<div class="card" id="hasilPembagian"></div>
-
-<div class="card" id="rekapHarian"></div>
-<div class="card" id="rekapBulanan"></div>
-</div>
-
-<!-- PAGE 3 -->
-<div id="page3" class="page">
-<h3>Cicilan</h3>
-
-<input type="text" id="namaCicilan" placeholder="Nama Cicilan">
-<input type="number" id="jumlahCicilan" placeholder="Jumlah Cicilan (Rp)">
-<button onclick="tambahCicilan()">Tambah Cicilan</button>
-
-<div class="card" id="listCicilan"></div>
+    <div id="page3" class="page">
+        <div class="card">
+            <h3>📝 Tambah Cicilan/Pengeluaran</h3>
+            <input type="text" id="namaCicilan" placeholder="Nama Barang">
+            <input type="number" id="jumlahCicilan" placeholder="Jumlah (Rp)" style="margin-top:10px">
+            <button class="btn-primary" style="margin-top:10px" onclick="tambahCicilan()">Simpan Cicilan</button>
+        </div>
+        <div class="card">
+            <h3>📋 Daftar Cicilan</h3>
+            <div id="listCicilan"></div>
+        </div>
+    </div>
 </div>
 
 <div class="navbar">
-<button onclick="showPage(1)">Order</button>
-<button onclick="showPage(2)">Keuangan</button>
-<button onclick="showPage(3)">Cicilan</button>
+    <button class="nav-item active" onclick="showPage(1, this)"><span>🚗</span>Order</button>
+    <button class="nav-item" onclick="showPage(2, this)"><span>📈</span>Keuangan</button>
+    <button class="nav-item" onclick="showPage(3, this)"><span>💳</span>Cicilan</button>
 </div>
 
 <script>
+    let dataPendapatan = JSON.parse(localStorage.getItem("pendapatan")) || [];
+    let cicilan = JSON.parse(localStorage.getItem("cicilan")) || [];
 
-let dataPendapatan = JSON.parse(localStorage.getItem("pendapatan")) || [];
-let cicilan = JSON.parse(localStorage.getItem("cicilan")) || [];
+    function showPage(num, el) {
+        document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+        document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+        document.getElementById("page" + num).classList.add("active");
+        el.classList.add("active");
+    }
 
-function showPage(num){
-document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-document.getElementById("page"+num).classList.add("active");
-}
+    function hitungOngkos() {
+        let nama = document.getElementById("namaPelanggan").value;
+        let jarak = parseFloat(document.getElementById("jarak").value);
+        let tarif = parseFloat(document.getElementById("tarif").value);
 
-function hitungOngkos(){
-let nama = document.getElementById("namaPelanggan").value;
-let jarak = parseFloat(document.getElementById("jarak").value);
-let tarif = parseFloat(document.getElementById("tarif").value);
+        if (!nama || isNaN(jarak)) return alert("Mohon isi nama dan jarak!");
 
-if(!nama || !jarak) return alert("Lengkapi data!");
+        let total = jarak * tarif;
+        document.getElementById("hasilOrder").innerHTML = `
+            <div class="card" style="border-left: 5px solid var(--success)">
+                <small>Estimasi Untuk: <b>${nama}</b></small>
+                <h2 style="margin: 10px 0; color: var(--success)">Rp ${total.toLocaleString()}</h2>
+                <button class="btn-success" onclick="simpanOrder('${nama}', ${total})">Selesaikan & Simpan Order</button>
+            </div>`;
+    }
 
-let total = jarak * tarif;
-document.getElementById("hasilOrder").innerHTML =
-`Pelanggan: ${nama}<br>
-Jarak: ${jarak} km<br>
-Total Ongkos: Rp ${total.toLocaleString()}`;
-}
+    function simpanOrder(nama, total) {
+        let tanggal = new Date();
+        dataPendapatan.push({
+            tanggal: tanggal.toLocaleDateString(),
+            bulan: tanggal.getMonth() + 1,
+            total: total,
+            ket: "Order: " + nama
+        });
+        localStorage.setItem("pendapatan", JSON.stringify(dataPendapatan));
+        alert("Order berhasil disimpan ke rekap!");
+        document.getElementById("hasilOrder").innerHTML = "";
+        updateRekap();
+    }
 
-function hitungPembagian(){
-let total = parseFloat(document.getElementById("totalPendapatan").value);
-if(!total) return alert("Masukkan pendapatan");
+    function hitungPembagianManual() {
+        let total = parseFloat(document.getElementById("totalPendapatan").value);
+        if (isNaN(total)) return alert("Masukkan angka pendapatan!");
+        simpanOrder("Manual", total);
+        document.getElementById("totalPendapatan").value = "";
+    }
 
-let bensin = total * 0.2;
-let tabungan = total * 0.3;
-let kebutuhan = total * 0.5;
+    function updateRekap() {
+        let hariIni = new Date().toLocaleDateString();
+        let bulanIni = new Date().getMonth() + 1;
 
-let tanggal = new Date();
-dataPendapatan.push({
-tanggal: tanggal.toLocaleDateString(),
-bulan: tanggal.getMonth()+1,
-total: total
-});
-localStorage.setItem("pendapatan", JSON.stringify(dataPendapatan));
+        let totalHarian = 0;
+        let totalBulanan = 0;
 
-document.getElementById("hasilPembagian").innerHTML =
-`Bensin & Service (20%): Rp ${bensin.toLocaleString()}<br>
-Tabungan (30%): Rp ${tabungan.toLocaleString()}<br>
-Kebutuhan Rumah (50%): Rp ${kebutuhan.toLocaleString()}`;
+        dataPendapatan.forEach(d => {
+            if (d.tanggal === hariIni) totalHarian += d.total;
+            if (d.bulan === bulanIni) totalBulanan += d.total;
+        });
 
-updateRekap();
-}
+        document.getElementById("rekapHarian").innerText = `Rp ${totalHarian.toLocaleString()}`;
+        document.getElementById("rekapBulanan").innerText = `Rp ${totalBulanan.toLocaleString()}`;
 
-function updateRekap(){
-let hariIni = new Date().toLocaleDateString();
-let bulanIni = new Date().getMonth()+1;
+        // Update Alokasi Berdasarkan Total Bulanan
+        let bensin = totalBulanan * 0.2;
+        let tabungan = totalBulanan * 0.3;
+        let kebutuhan = totalBulanan * 0.5;
 
-let totalHarian = 0;
-let totalBulanan = 0;
+        document.getElementById("alokasiDetail").innerHTML = `
+            <div>
+                <div style="display:flex; justify-content:space-between"><small>Bensin (20%)</small> <b>Rp ${bensin.toLocaleString()}</b></div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 20%; background: #fbbf24"></div></div>
+            </div>
+            <div>
+                <div style="display:flex; justify-content:space-between"><small>Tabungan (30%)</small> <b>Rp ${tabungan.toLocaleString()}</b></div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 30%; background: #22c55e"></div></div>
+            </div>
+            <div>
+                <div style="display:flex; justify-content:space-between"><small>Kebutuhan (50%)</small> <b>Rp ${kebutuhan.toLocaleString()}</b></div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 50%"></div></div>
+            </div>
+        `;
+    }
 
-dataPendapatan.forEach(d=>{
-if(d.tanggal === hariIni) totalHarian += d.total;
-if(d.bulan === bulanIni) totalBulanan += d.total;
-});
+    function tambahCicilan() {
+        let nama = document.getElementById("namaCicilan").value;
+        let jumlah = parseFloat(document.getElementById("jumlahCicilan").value);
 
-document.getElementById("rekapHarian").innerHTML =
-`Total Hari Ini: Rp ${totalHarian.toLocaleString()}`;
+        if (!nama || isNaN(jumlah)) return alert("Isi nama dan jumlah cicilan!");
+        cicilan.push({ id: Date.now(), nama, jumlah });
+        localStorage.setItem("cicilan", JSON.stringify(cicilan));
+        document.getElementById("namaCicilan").value = "";
+        document.getElementById("jumlahCicilan").value = "";
+        tampilkanCicilan();
+    }
 
-document.getElementById("rekapBulanan").innerHTML =
-`Total Bulan Ini: Rp ${totalBulanan.toLocaleString()}`;
-}
+    function hapusCicilan(id) {
+        cicilan = cicilan.filter(c => c.id !== id);
+        localStorage.setItem("cicilan", JSON.stringify(cicilan));
+        tampilkanCicilan();
+    }
 
-function tambahCicilan(){
-let nama = document.getElementById("namaCicilan").value;
-let jumlah = parseFloat(document.getElementById("jumlahCicilan").value);
+    function tampilkanCicilan() {
+        let html = "";
+        cicilan.forEach(c => {
+            html += `
+                <div class="list-item">
+                    <div>
+                        <strong>${c.nama}</strong><br>
+                        <small>Rp ${c.jumlah.toLocaleString()}</small>
+                    </div>
+                    <button class="btn-outline-danger" onclick="hapusCicilan(${c.id})">Hapus</button>
+                </div>`;
+        });
+        document.getElementById("listCicilan").innerHTML = html || "<p style='color:gray; font-size:0.8rem'>Belum ada daftar cicilan.</p>";
+    }
 
-if(!nama || !jumlah) return alert("Lengkapi");
-
-cicilan.push({nama, jumlah});
-localStorage.setItem("cicilan", JSON.stringify(cicilan));
-tampilkanCicilan();
-}
-
-function tampilkanCicilan(){
-let html = "";
-cicilan.forEach(c=>{
-html += `${c.nama} - Rp ${c.jumlah.toLocaleString()}<br>`;
-});
-document.getElementById("listCicilan").innerHTML = html;
-}
-
-updateRekap();
-tampilkanCicilan();
-
+    // Init
+    updateRekap();
+    tampilkanCicilan();
 </script>
 
 </body>
