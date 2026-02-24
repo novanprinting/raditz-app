@@ -3,130 +3,214 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Raditz Ojol App</title>
-<link rel="manifest" href="manifest.json">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>RADITZ OJOL PRO</title>
+
 <style>
-body { font-family: Arial; background:#f4f6f9; padding:15px; }
-.container { background:white; padding:15px; border-radius:12px; max-width:900px; margin:auto; }
-input, button, select { width:100%; padding:8px; margin-top:8px; }
-button { background:#28a745; color:white; border:none; border-radius:6px; }
-.section { margin-top:20px; }
-.summary { background:#e9f7ef; padding:10px; border-radius:8px; margin-top:10px; }
+body {
+margin:0;
+font-family:Arial;
+background:#f2f2f2;
+}
+
+.header {
+background:#1e88e5;
+color:white;
+padding:15px;
+text-align:center;
+font-weight:bold;
+}
+
+.page {
+display:none;
+padding:15px;
+}
+
+.active {
+display:block;
+}
+
+input, button {
+width:100%;
+padding:10px;
+margin-top:10px;
+border-radius:8px;
+border:1px solid #ccc;
+}
+
+button {
+background:#1e88e5;
+color:white;
+border:none;
+}
+
+.card {
+background:white;
+padding:15px;
+border-radius:12px;
+margin-top:15px;
+}
+
+.navbar {
+position:fixed;
+bottom:0;
+width:100%;
+display:flex;
+background:white;
+border-top:1px solid #ccc;
+}
+
+.navbar button {
+flex:1;
+border:none;
+background:white;
+padding:12px;
+font-size:14px;
+}
+
+.navbar button.active {
+color:#1e88e5;
+font-weight:bold;
+}
 </style>
 </head>
 <body>
 
-<div class="container">
-<h2>RADITZ OJOL APP</h2>
-
-<div class="section">
-<h3>Target Harian</h3>
-<input type="number" id="targetHarian" placeholder="Target harian (Rp)">
-<button onclick="simpanTarget()">Simpan Target</button>
+<div class="header">
+RADITZ OJOL PRO
 </div>
 
-<div class="section">
-<h3>Tambah Transaksi</h3>
-<input type="number" id="pendapatan" placeholder="Pendapatan (Rp)">
-<input type="number" id="bensin" placeholder="Bensin (Rp)">
-<button onclick="tambahTransaksi()">Tambah</button>
+<!-- PAGE 1 -->
+<div id="page1" class="page active">
+<h3>Penerimaan Order</h3>
+
+<input type="text" id="namaPelanggan" placeholder="Nama Pelanggan">
+<input type="number" id="jarak" placeholder="Jarak (km)">
+<input type="number" id="tarif" placeholder="Tarif per km (Rp)" value="4000">
+
+<button onclick="hitungOngkos()">Hitung Ongkos</button>
+
+<div class="card" id="hasilOrder"></div>
 </div>
 
-<div class="section">
-<h3>Tambah Cicilan</h3>
+<!-- PAGE 2 -->
+<div id="page2" class="page">
+<h3>Pembagian Pendapatan</h3>
+
+<input type="number" id="totalPendapatan" placeholder="Total Pendapatan Hari Ini (Rp)">
+<button onclick="hitungPembagian()">Hitung Pembagian</button>
+
+<div class="card" id="hasilPembagian"></div>
+
+<div class="card" id="rekapHarian"></div>
+<div class="card" id="rekapBulanan"></div>
+</div>
+
+<!-- PAGE 3 -->
+<div id="page3" class="page">
+<h3>Cicilan</h3>
+
 <input type="text" id="namaCicilan" placeholder="Nama Cicilan">
-<input type="number" id="totalCicilan" placeholder="Total Hutang (Rp)">
-<input type="number" id="cicilanPerBulan" placeholder="Angsuran per bulan (Rp)">
+<input type="number" id="jumlahCicilan" placeholder="Jumlah Cicilan (Rp)">
 <button onclick="tambahCicilan()">Tambah Cicilan</button>
+
+<div class="card" id="listCicilan"></div>
 </div>
 
-<div class="section">
-<h3>Ringkasan Hari Ini</h3>
-<div class="summary" id="ringkasan"></div>
-</div>
-
-<canvas id="chart"></canvas>
-
+<div class="navbar">
+<button onclick="showPage(1)">Order</button>
+<button onclick="showPage(2)">Keuangan</button>
+<button onclick="showPage(3)">Cicilan</button>
 </div>
 
 <script>
-if ('serviceWorker' in navigator) {
-navigator.serviceWorker.register('sw.js');
-}
 
-let data = JSON.parse(localStorage.getItem("data")) || [];
+let dataPendapatan = JSON.parse(localStorage.getItem("pendapatan")) || [];
 let cicilan = JSON.parse(localStorage.getItem("cicilan")) || [];
-let targetHarian = localStorage.getItem("targetHarian") || 0;
 
-function simpan(){
-localStorage.setItem("data", JSON.stringify(data));
-localStorage.setItem("cicilan", JSON.stringify(cicilan));
+function showPage(num){
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+document.getElementById("page"+num).classList.add("active");
 }
 
-function simpanTarget(){
-targetHarian = document.getElementById("targetHarian").value;
-localStorage.setItem("targetHarian", targetHarian);
-alert("Target disimpan!");
+function hitungOngkos(){
+let nama = document.getElementById("namaPelanggan").value;
+let jarak = parseFloat(document.getElementById("jarak").value);
+let tarif = parseFloat(document.getElementById("tarif").value);
+
+if(!nama || !jarak) return alert("Lengkapi data!");
+
+let total = jarak * tarif;
+document.getElementById("hasilOrder").innerHTML =
+`Pelanggan: ${nama}<br>
+Jarak: ${jarak} km<br>
+Total Ongkos: Rp ${total.toLocaleString()}`;
 }
 
-function tambahTransaksi(){
-let pendapatan = parseFloat(document.getElementById("pendapatan").value);
-let bensin = parseFloat(document.getElementById("bensin").value) || 0;
-if(!pendapatan) return alert("Isi pendapatan");
+function hitungPembagian(){
+let total = parseFloat(document.getElementById("totalPendapatan").value);
+if(!total) return alert("Masukkan pendapatan");
 
-let bersih = pendapatan - bensin;
-let tanggal = new Date().toLocaleDateString();
+let bensin = total * 0.2;
+let tabungan = total * 0.3;
+let kebutuhan = total * 0.5;
 
-data.push({tanggal, pendapatan, bersih});
-simpan();
-tampilkan();
-cekTarget();
+let tanggal = new Date();
+dataPendapatan.push({
+tanggal: tanggal.toLocaleDateString(),
+bulan: tanggal.getMonth()+1,
+total: total
+});
+localStorage.setItem("pendapatan", JSON.stringify(dataPendapatan));
+
+document.getElementById("hasilPembagian").innerHTML =
+`Bensin & Service (20%): Rp ${bensin.toLocaleString()}<br>
+Tabungan (30%): Rp ${tabungan.toLocaleString()}<br>
+Kebutuhan Rumah (50%): Rp ${kebutuhan.toLocaleString()}`;
+
+updateRekap();
+}
+
+function updateRekap(){
+let hariIni = new Date().toLocaleDateString();
+let bulanIni = new Date().getMonth()+1;
+
+let totalHarian = 0;
+let totalBulanan = 0;
+
+dataPendapatan.forEach(d=>{
+if(d.tanggal === hariIni) totalHarian += d.total;
+if(d.bulan === bulanIni) totalBulanan += d.total;
+});
+
+document.getElementById("rekapHarian").innerHTML =
+`Total Hari Ini: Rp ${totalHarian.toLocaleString()}`;
+
+document.getElementById("rekapBulanan").innerHTML =
+`Total Bulan Ini: Rp ${totalBulanan.toLocaleString()}`;
 }
 
 function tambahCicilan(){
 let nama = document.getElementById("namaCicilan").value;
-let total = parseFloat(document.getElementById("totalCicilan").value);
-let perBulan = parseFloat(document.getElementById("cicilanPerBulan").value);
-if(!nama || !total || !perBulan) return alert("Lengkapi!");
+let jumlah = parseFloat(document.getElementById("jumlahCicilan").value);
 
-cicilan.push({nama, total, perBulan});
-simpan();
-alert("Cicilan ditambahkan");
+if(!nama || !jumlah) return alert("Lengkapi");
+
+cicilan.push({nama, jumlah});
+localStorage.setItem("cicilan", JSON.stringify(cicilan));
+tampilkanCicilan();
 }
 
-function tampilkan(){
-let hariIni = new Date().toLocaleDateString();
-let totalHariIni = 0;
-
-data.forEach(d=>{
-if(d.tanggal === hariIni){
-totalHariIni += d.bersih;
-}
+function tampilkanCicilan(){
+let html = "";
+cicilan.forEach(c=>{
+html += `${c.nama} - Rp ${c.jumlah.toLocaleString()}<br>`;
 });
-
-document.getElementById("ringkasan").innerHTML =
-`Pendapatan Bersih Hari Ini: Rp ${totalHariIni.toLocaleString()}<br>
-Target Harian: Rp ${parseInt(targetHarian).toLocaleString()}`;
-
+document.getElementById("listCicilan").innerHTML = html;
 }
 
-function cekTarget(){
-let hariIni = new Date().toLocaleDateString();
-let totalHariIni = 0;
+updateRekap();
+tampilkanCicilan();
 
-data.forEach(d=>{
-if(d.tanggal === hariIni){
-totalHariIni += d.bersih;
-}
-});
-
-if(totalHariIni >= targetHarian){
-alert("?? Target Harian Tercapai!");
-}
-}
-
-tampilkan();
 </script>
 
 </body>
