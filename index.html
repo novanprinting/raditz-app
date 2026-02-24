@@ -10,91 +10,37 @@
             --success: #22c55e;
             --danger: #ef4444;
             --warning: #f59e0b;
-            --bg: #f8fafc;
-            --card: #ffffff;
+            --bg: #f1f5f9;
         }
 
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: var(--bg);
-            padding-bottom: 80px;
-        }
-
-        .header {
-            background: var(--primary);
-            color: white;
-            padding: 15px;
-            text-align: center;
-            font-weight: bold;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); padding-bottom: 90px; }
+        .header { background: var(--primary); color: white; padding: 15px; text-align: center; font-weight: bold; position: sticky; top:0; z-index:10; }
         .container { padding: 15px; max-width: 500px; margin: auto; }
-
+        
         .page { display: none; }
-        .page.active { display: block; }
+        .page.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .card {
-            background: var(--card);
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            border: 1px solid #e2e8f0;
-        }
+        .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        h3 { margin-top: 0; font-size: 1.1rem; color: #334155; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; }
+        
+        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #cbd5e1; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-danger { background: #fee2e2; color: var(--danger); font-size: 0.8rem; }
+        .btn-pay { background: #dcfce7; color: #166534; width: auto; padding: 5px 12px; font-size: 0.8rem; }
 
-        input, button {
-            width: 100%;
-            padding: 12px;
-            margin-top: 10px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            box-sizing: border-box;
-        }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; margin: 5px 0; }
+        .allocation-box { background: #f8fafc; padding: 10px; border-radius: 8px; margin-top: 10px; border-left: 4px solid var(--primary); }
+        
+        .navbar { position: fixed; bottom: 0; width: 100%; display: flex; background: white; border-top: 1px solid #e2e8f0; }
+        .navbar button { flex: 1; background: none; color: #64748b; padding: 15px 0; border-radius: 0; }
+        .navbar button.active { color: var(--primary); font-weight: bold; border-top: 3px solid var(--primary); }
 
-        .btn-primary { background: var(--primary); color: white; border: none; font-weight: bold; }
-        .btn-danger { background: var(--danger); color: white; border: none; }
-        .btn-success { background: var(--success); color: white; border: none; }
-        .btn-outline-danger { background: transparent; color: var(--danger); border: 1px solid var(--danger); width: auto; padding: 5px 10px; }
-
-        .navbar {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            display: flex;
-            background: white;
-            border-top: 1px solid #eee;
-        }
-
-        .navbar button {
-            flex: 1;
-            border: none;
-            background: white;
-            padding: 15px;
-            font-size: 14px;
-            margin: 0;
-            border-radius: 0;
-        }
-
-        .navbar button.active { color: var(--primary); font-weight: bold; }
-
-        .history-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .badge-lunas {
-            background: #dcfce7;
-            color: #166534;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 0.7rem;
-            font-weight: bold;
-        }
+        .badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; font-weight: bold; }
+        .badge-info { background: #e0f2fe; color: #0369a1; }
     </style>
 </head>
 <body>
@@ -104,43 +50,37 @@
 <div class="container">
     <div id="page1" class="page active">
         <div class="card">
-            <h3>Penerimaan Order</h3>
-            <p style="font-size: 0.8rem; color: #64748b;">Tarif: ≤2km = Rp5.000 | >2km = +Rp2.000/km</p>
+            <h3>🚗 Input Order</h3>
             <input type="text" id="namaPelanggan" placeholder="Nama Pelanggan">
             <input type="number" id="jarak" placeholder="Jarak (km)">
-            <button class="btn-primary" onclick="hitungOngkosProgresif()">Hitung Ongkos</button>
+            <button class="btn-primary" onclick="hitungOngkos()">Hitung & Simpan</button>
         </div>
         <div id="hasilOrder"></div>
     </div>
 
     <div id="page2" class="page">
         <div class="card">
-            <h3>Tambah Pendapatan</h3>
-            <input type="number" id="manualPendapatan" placeholder="Rp Pendapatan Lain">
-            <button class="btn-primary" onclick="tambahManual()">Tambah ke Rekap</button>
-        </div>
-
-        <div class="card">
-            <h3>Riwayat & Rekap</h3>
-            <div id="rekapHarian">Total Hari Ini: Rp 0</div>
-            <div id="rekapBulanan">Total Bulan Ini: Rp 0</div>
-            <hr>
-            <div id="listRiwayat" style="max-height: 200px; overflow-y: auto;"></div>
-            <button class="btn-danger" style="margin-top: 15px;" onclick="resetKeuangan()">Reset Semua Data Keuangan</button>
+            <h3>📊 Rekap & Alokasi Hari Ini</h3>
+            <div class="flex-between"><span>Total Pendapatan:</span> <b id="totalHarian">Rp 0</b></div>
+            
+            <div class="allocation-box">
+                <div class="flex-between"><small>🏠 Kebutuhan (50%)</small> <span id="aloKebutuhan">Rp 0</span></div>
+                <div class="flex-between"><small>🏦 Tabungan (30%)</small> <span id="aloTabungan">Rp 0</span></div>
+                <div class="flex-between"><small>🛠️ Perawatan (20%)</small> <span id="aloPerawatan">Rp 0</span></div>
+            </div>
+            <button class="btn-danger" style="margin-top:15px" onclick="resetKeuangan()">Reset Data Hari Ini</button>
         </div>
     </div>
 
     <div id="page3" class="page">
         <div class="card">
-            <h3>Tambah Cicilan</h3>
-            <input type="text" id="namaCicilan" placeholder="Nama Cicilan">
-            <input type="number" id="jumlahCicilan" placeholder="Jumlah (Rp)">
-            <button class="btn-primary" onclick="tambahCicilan()">Simpan Cicilan</button>
+            <h3>📝 Manajemen Cicilan</h3>
+            <input type="text" id="namaCicilan" placeholder="Nama Barang (misal: Motor)">
+            <input type="number" id="totalHutang" placeholder="Total Sisa Hutang (Rp)">
+            <input type="number" id="cicilanBulan" placeholder="Tagihan per Bulan (Rp)">
+            <button class="btn-primary" onclick="tambahCicilan()">Tambah Cicilan</button>
         </div>
-        <div class="card">
-            <h3>Daftar Cicilan</h3>
-            <div id="listCicilan"></div>
-        </div>
+        <div id="listCicilan"></div>
     </div>
 </div>
 
@@ -159,113 +99,87 @@
         document.querySelectorAll(".navbar button").forEach(b => b.classList.remove("active"));
         document.getElementById("page" + num).classList.add("active");
         btn.classList.add("active");
+        if(num === 2) updateRekap();
     }
 
-    // --- LOGIKA ORDER (TARIF PROGRESIF) ---
-    function hitungOngkosProgresif() {
+    // --- LOGIKA ORDER ---
+    function hitungOngkos() {
         let nama = document.getElementById("namaPelanggan").value;
         let jarak = parseFloat(document.getElementById("jarak").value);
+        if (!nama || isNaN(jarak)) return alert("Isi data dengan benar!");
+
+        let total = (jarak <= 2) ? 5000 : 5000 + ((jarak - 2) * 2000);
         
-        if (!nama || isNaN(jarak)) return alert("Lengkapi data!");
-
-        let total = 0;
-        if (jarak <= 2) {
-            total = 5000;
-        } else {
-            total = 5000 + ((jarak - 2) * 2000);
-        }
-
-        document.getElementById("hasilOrder").innerHTML = `
-            <div class="card">
-                <strong>Detail Order:</strong><br>
-                Pelanggan: ${nama}<br>
-                Jarak: ${jarak} km<br>
-                Total: <b>Rp ${total.toLocaleString()}</b>
-                <button class="btn-success" onclick="simpanKeRekap('${nama}', ${total})">Selesaikan & Simpan</button>
-            </div>`;
-    }
-
-    function simpanKeRekap(nama, total) {
-        let tgl = new Date();
-        dataPendapatan.push({
-            id: Date.now(),
-            tanggal: tgl.toLocaleDateString(),
-            bulan: tgl.getMonth() + 1,
-            nama: nama,
-            total: total
-        });
+        // Langsung simpan
+        dataPendapatan.push({ id: Date.now(), tgl: new Date().toLocaleDateString(), total: total });
         localStorage.setItem("pendapatan", JSON.stringify(dataPendapatan));
-        document.getElementById("hasilOrder").innerHTML = "";
+        
+        document.getElementById("hasilOrder").innerHTML = `
+            <div class="card" style="border-left: 5px solid var(--success)">
+                <small>Berhasil disimpan!</small><br>
+                <b>${nama}</b>: Rp ${total.toLocaleString()}
+            </div>`;
+        
+        document.getElementById("namaPelanggan").value = "";
+        document.getElementById("jarak").value = "";
         updateRekap();
-        alert("Berhasil disimpan!");
     }
 
-    // --- LOGIKA KEUANGAN ---
-    function tambahManual() {
-        let nominal = parseFloat(document.getElementById("manualPendapatan").value);
-        if (isNaN(nominal)) return alert("Masukkan angka!");
-        simpanKeRekap("Manual/Lainnya", nominal);
-        document.getElementById("manualPendapatan").value = "";
+    // --- LOGIKA KEUANGAN (AUTO ALOKASI) --- 
+    function updateRekap() {
+        let hariIni = new Date().toLocaleDateString();
+        let total = dataPendapatan
+            .filter(d => d.tgl === hariIni)
+            .reduce((sum, item) => sum + item.total, 0);
+
+        document.getElementById("totalHarian").innerText = `Rp ${total.toLocaleString()}`;
+        document.getElementById("aloKebutuhan").innerText = `Rp ${(total * 0.5).toLocaleString()}`;
+        document.getElementById("aloTabungan").innerText = `Rp ${(total * 0.3).toLocaleString()}`;
+        document.getElementById("aloPerawatan").innerText = `Rp ${(total * 0.2).toLocaleString()}`;
     }
 
-    function hapusRiwayat(id) {
-        if(confirm("Hapus catatan ini?")) {
-            dataPendapatan = dataPendapatan.filter(d => d.id !== id);
+    function resetKeuangan() {
+        if(confirm("Hapus rekap hari ini?")) {
+            let hariIni = new Date().toLocaleDateString();
+            dataPendapatan = dataPendapatan.filter(d => d.tgl !== hariIni);
             localStorage.setItem("pendapatan", JSON.stringify(dataPendapatan));
             updateRekap();
         }
     }
 
-    function resetKeuangan() {
-        if(confirm("PERINGATAN: Hapus seluruh riwayat pendapatan?")) {
-            dataPendapatan = [];
-            localStorage.removeItem("pendapatan");
-            updateRekap();
-        }
-    }
-
-    function updateRekap() {
-        let hariIni = new Date().toLocaleDateString();
-        let bulanIni = new Date().getMonth() + 1;
-        let totalHarian = 0, totalBulanan = 0, htmlRiwayat = "";
-
-        dataPendapatan.forEach(d => {
-            if (d.tanggal === hariIni) totalHarian += d.total;
-            if (d.bulan === bulanIni) totalBulanan += d.total;
-            
-            htmlRiwayat += `
-                <div class="history-item">
-                    <small>${d.nama} (Rp ${d.total.toLocaleString()})</small>
-                    <button class="btn-outline-danger" onclick="hapusRiwayat(${d.id})">Del</button>
-                </div>`;
-        });
-
-        document.getElementById("rekapHarian").innerHTML = `<b>Total Hari Ini:</b> Rp ${totalHarian.toLocaleString()}`;
-        document.getElementById("rekapBulanan").innerHTML = `<b>Total Bulan Ini:</b> Rp ${totalBulanan.toLocaleString()}`;
-        document.getElementById("listRiwayat").innerHTML = htmlRiwayat || "<small>Belum ada riwayat.</small>";
-    }
-
-    // --- LOGIKA CICILAN ---
+    // --- LOGIKA CICILAN (AUTO REDUCE) ---
     function tambahCicilan() {
         let nama = document.getElementById("namaCicilan").value;
-        let jumlah = parseFloat(document.getElementById("jumlahCicilan").value);
+        let sisa = parseFloat(document.getElementById("totalHutang").value);
+        let perBulan = parseFloat(document.getElementById("cicilanBulan").value);
 
-        if (!nama || isNaN(jumlah)) return alert("Lengkapi data cicilan!");
-        dataCicilan.push({ id: Date.now(), nama, jumlah, lunas: false });
+        if(!nama || isNaN(sisa) || isNaN(perBulan)) return alert("Lengkapi data!");
+
+        dataCicilan.push({ id: Date.now(), nama, sisa, perBulan, lunas: false });
         localStorage.setItem("cicilan", JSON.stringify(dataCicilan));
         tampilkanCicilan();
+        
+        // Reset input
         document.getElementById("namaCicilan").value = "";
-        document.getElementById("jumlahCicilan").value = "";
+        document.getElementById("totalHutang").value = "";
+        document.getElementById("cicilanBulan").value = "";
     }
 
-    function toggleLunas(id) {
-        dataCicilan = dataCicilan.map(c => c.id === id ? { ...c, lunas: !c.lunas } : c);
+    function bayarCicilan(id) {
+        dataCicilan = dataCicilan.map(c => {
+            if(c.id === id) {
+                let sisaBaru = c.sisa - c.perBulan;
+                if(sisaBaru <= 0) return { ...c, sisa: 0, lunas: true };
+                return { ...c, sisa: sisaBaru };
+            }
+            return c;
+        });
         localStorage.setItem("cicilan", JSON.stringify(dataCicilan));
         tampilkanCicilan();
     }
 
     function hapusCicilan(id) {
-        if(confirm("Hapus cicilan ini?")) {
+        if(confirm("Hapus data cicilan ini?")) {
             dataCicilan = dataCicilan.filter(c => c.id !== id);
             localStorage.setItem("cicilan", JSON.stringify(dataCicilan));
             tampilkanCicilan();
@@ -276,21 +190,25 @@
         let html = "";
         dataCicilan.forEach(c => {
             html += `
-                <div class="history-item" style="${c.lunas ? 'opacity: 0.6' : ''}">
-                    <div>
-                        <span style="${c.lunas ? 'text-decoration: line-through' : ''}">${c.nama} - Rp ${c.jumlah.toLocaleString()}</span>
-                        ${c.lunas ? '<span class="badge-lunas">LUNAS</span>' : ''}
+                <div class="card">
+                    <div class="flex-between">
+                        <strong>${c.nama}</strong>
+                        ${c.lunas ? '<span class="badge" style="background:#dcfce7;color:#166534">LUNAS</span>' : '<span class="badge badge-info">Berjalan</span>'}
                     </div>
-                    <div>
-                        <button onclick="toggleLunas(${c.id})" style="width:auto; padding:5px; font-size:10px">${c.lunas ? 'Batal' : 'Lunas'}</button>
-                        <button class="btn-outline-danger" onclick="hapusCicilan(${c.id})">Hapus</button>
+                    <div class="flex-between" style="margin-top:10px">
+                        <small>Sisa Hutang: <br><b>Rp ${c.sisa.toLocaleString()}</b></small>
+                        <small>Tagihan/Bulan: <br><b>Rp ${c.perBulan.toLocaleString()}</b></small>
+                    </div>
+                    <div class="flex-between" style="margin-top:15px">
+                        ${!c.lunas ? `<button class="btn-pay" onclick="bayarCicilan(${c.id})">Bayar 1 Bulan</button>` : '<span></span>'}
+                        <button class="btn-danger" style="width:auto; padding:5px 10px" onclick="hapusCicilan(${c.id})">Hapus</button>
                     </div>
                 </div>`;
         });
-        document.getElementById("listCicilan").innerHTML = html || "<small>Tidak ada cicilan.</small>";
+        document.getElementById("listCicilan").innerHTML = html || "<p style='text-align:center; color:#64748b'>Belum ada cicilan.</p>";
     }
 
-    // Jalankan awal
+    // Init
     updateRekap();
     tampilkanCicilan();
 </script>
